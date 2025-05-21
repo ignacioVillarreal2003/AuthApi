@@ -19,3 +19,8 @@ jwt:
   expiration_refresh_token: 10080000
 cors:
   allowed-origin: http://localhost:4200/
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG

@@ -4,9 +4,6 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-### Properties ###
-src/main/resources/application-prod.yml
-
 ### STS ###
 .apt_generated
 .classpath
