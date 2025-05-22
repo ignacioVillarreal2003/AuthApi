@@ -2,7 +2,7 @@ spring:
   application:
     name: AuthApi
   datasource:
-    url: jdbc:postgresql://localhost:5432/authdb
+    url: jdbc:postgresql://authdb:5432/authdb
     username: admin
     password: password
   jpa:

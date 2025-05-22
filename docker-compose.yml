@@ -1,0 +1,29 @@
+services:
+  authdb:
+    image: 'postgres:latest'
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: authdb
+    volumes:
+      - authdb:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  authapi:
+    build:
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    depends_on:
+      authdb:
+        condition: service_healthy
+    restart: on-failure
+
+volumes:
+  authdb:
