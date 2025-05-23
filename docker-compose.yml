@@ -4,13 +4,13 @@ services:
     ports:
       - 5432:5432
     environment:
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: IgnacioVillarreal
+      POSTGRES_PASSWORD: 12345678
       POSTGRES_DB: authdb
     volumes:
       - authdb:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "admin"]
+      test: [ "CMD", "pg_isready", "-U", "admin" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -18,6 +18,8 @@ services:
   authapi:
     build:
       dockerfile: Dockerfile
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
     ports:
       - 8080:8080
     depends_on:

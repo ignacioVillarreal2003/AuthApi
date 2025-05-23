@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/authdb
+    url: jdbc:postgresql://authdb:5432/authdb
     username: IgnacioVillarreal
     password: 12345678
   jpa:

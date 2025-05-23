@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: AuthApi
   datasource:
     url: ${DATASOURCE_URL}
     username: ${DATASOURCE_USERNAME}
