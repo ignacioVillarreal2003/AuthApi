@@ -16,7 +16,8 @@ jwt:
   expiration_token: 1440000
   expiration_refresh_token: 10080000
 cors:
-  allowed-origin: http://localhost:4200/
+  allowed-origins:
+    - http://localhost:4200/
 logging:
   level:
     org:

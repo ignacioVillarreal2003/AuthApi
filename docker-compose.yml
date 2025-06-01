@@ -1,31 +1,33 @@
 services:
-  authdb:
-    image: 'postgres:latest'
-    ports:
-      - 5432:5432
+  auth_api:
+    build:
+      dockerfile: Dockerfile
+    container_name: auth_api
     environment:
-      POSTGRES_USER: IgnacioVillarreal
-      POSTGRES_PASSWORD: 12345678
-      POSTGRES_DB: authdb
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgresql_auth_api:
+        condition: service_healthy
+    restart: on-failure
+
+  postgresql_auth_api:
+    image: postgres:latest
+    container_name: postgresql_auth_api
+    environment:
+      - POSTGRES_USER=IgnacioVillarreal
+      - POSTGRES_PASSWORD=12345678
+      - POSTGRES_DB=authdb
+    ports:
+      - "5432:5432"
     volumes:
-      - authdb:/var/lib/postgresql/data
+      - authdb_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "admin" ]
+      test: ["CMD", "pg_isready", "-U", "IgnacioVillarreal", "-d", "mediadb"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  authapi:
-    build:
-      dockerfile: Dockerfile
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-    ports:
-      - 8080:8080
-    depends_on:
-      authdb:
-        condition: service_healthy
-    restart: on-failure
-
 volumes:
-  authdb:
+  authdb_data:

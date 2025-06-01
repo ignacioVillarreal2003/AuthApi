@@ -11,12 +11,6 @@ spring:
   test:
     database:
       replace: any
-jwt:
-  secret: 23e586808ea364607079ec5b830ba702e80680339864b175eb2f5a13abd214e7
-  expiration_token: 1440000
-  expiration_refresh_token: 10080000
-cors:
-  allowed-origin: http://localhost:4200/
 logging:
   level:
     org:

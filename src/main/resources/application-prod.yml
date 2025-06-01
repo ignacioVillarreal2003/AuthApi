@@ -16,4 +16,4 @@ jwt:
   expiration_token: ${JWT_EXPIRATION_TOKEN}
   expiration_refresh_token: ${JWT_EXPIRATION_REFRESH_TOKEN}
 cors:
-  allowed-origin: ${CORS_ALLOWED_ORIGIN}
+  allowed-origins: ${CORS_ALLOWED_ORIGIN}
