@@ -1,10 +1,10 @@
-package com.api.authapi.unitTests.application.services;
+package com.api.authapi.unit.services;
 
 import com.api.authapi.application.mappers.UserResponseMapper;
-import com.api.authapi.application.services.AuthService;
+import com.api.authapi.application.services.UserService;
 import com.api.authapi.config.AuthenticatedUserProvider;
 import com.api.authapi.config.JwtService;
-import com.api.authapi.domain.dtos.*;
+import com.api.authapi.domain.dtos.user.*;
 import com.api.authapi.domain.enums.Role;
 import com.api.authapi.domain.models.User;
 import com.api.authapi.infraestructure.persistence.repositories.UserRepository;
@@ -17,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
@@ -29,7 +28,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class AuthServiceTest {
+class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
@@ -50,7 +49,7 @@ class AuthServiceTest {
     private AuthenticatedUserProvider authenticatedUserProvider;
 
     @InjectMocks
-    private AuthService authService;
+    private UserService authService;
 
     private String email;
     private String existingEmail;

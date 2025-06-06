@@ -1,4 +1,4 @@
-package com.api.authapi.integrationTests;
+package com.api.authapi.integration;
 
 import com.api.authapi.domain.enums.Role;
 import com.api.authapi.domain.models.User;

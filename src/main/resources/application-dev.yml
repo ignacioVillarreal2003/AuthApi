@@ -11,15 +11,35 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: IgnacioVillarreal
+    password: 12345678
+
 jwt:
   secret: 23e586808ea364607079ec5b830ba702e80680339864b175eb2f5a13abd214e7
   expiration_token: 1440000
   expiration_refresh_token: 10080000
+
 cors:
   allowed-origins:
     - http://localhost:4200/
+
 logging:
   level:
     org:
       springframework:
         security: DEBUG
+
+rabbit:
+  exchange: user-registration-exchange
+  queue:
+    queue-registration-request: registration-request
+    queue-registration-response: registration-response
+    queue-registration-rollback: registration-rollback
+  routingKey:
+    routingKey-registration-request: registration-request
+    routingKey-registration-response: registration-response
+    routing-key-registration-rollback: registration-rollback

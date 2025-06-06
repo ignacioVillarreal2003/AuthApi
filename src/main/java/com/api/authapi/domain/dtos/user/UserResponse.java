@@ -1,4 +1,4 @@
-package com.api.authapi.domain.dtos;
+package com.api.authapi.domain.dtos.user;
 
 import lombok.Builder;
 import lombok.Getter;

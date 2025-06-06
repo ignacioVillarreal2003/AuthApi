@@ -11,9 +11,28 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
+
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+
 jwt:
   secret: ${JWT_SECRET}
   expiration_token: ${JWT_EXPIRATION_TOKEN}
   expiration_refresh_token: ${JWT_EXPIRATION_REFRESH_TOKEN}
+
 cors:
   allowed-origins: ${CORS_ALLOWED_ORIGIN}
+
+rabbit:
+  exchange: user-registration-exchange
+  queue:
+    queue-registration-request: registration-request
+    queue-registration-response: registration-response
+    queue-registration-rollback: registration-rollback
+  routingKey:
+    routingKey-registration-request: registration-request
+    routingKey-registration-response: registration-response
+    routing-key-registration-rollback: registration-rollback

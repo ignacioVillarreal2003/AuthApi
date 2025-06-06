@@ -10,6 +10,8 @@ services:
     depends_on:
       postgresql_auth_api:
         condition: service_healthy
+      rabbitmq_auth_api:
+        condition: service_healthy
     restart: on-failure
 
   postgresql_auth_api:
@@ -25,6 +27,21 @@ services:
       - authdb_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready", "-U", "IgnacioVillarreal", "-d", "mediadb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq_auth_api:
+    image: rabbitmq:management
+    container_name: rabbitmq_auth_api
+    environment:
+      - RABBITMQ_DEFAULT_USER=IgnacioVillarreal
+      - RABBITMQ_DEFAULT_PASS=12345678
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5

@@ -1,6 +1,6 @@
 package com.api.authapi.application.mappers;
 
-import com.api.authapi.domain.dtos.UserResponse;
+import com.api.authapi.domain.dtos.user.UserResponse;
 import com.api.authapi.domain.models.User;
 import org.springframework.stereotype.Service;
 

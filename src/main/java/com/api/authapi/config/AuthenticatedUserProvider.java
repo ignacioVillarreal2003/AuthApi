@@ -20,7 +20,7 @@ public class AuthenticatedUserProvider {
 
     public User getAuthenticatedUser() {
         String email = getAuthenticatedUsername();
-        return userRepository.findByEmail(email).orElseThrow(() ->
-                new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+        return userRepository.findByEmailAndEnabledTrue(email).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated"));
     }
 }
