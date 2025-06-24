@@ -1,7 +1,21 @@
 spring:
   application:
     name: AuthApi
+
   profiles:
     active: dev
+
 server:
   port: 8080
+
+rabbit:
+  exchange:
+    user-register: authapi.user.register.exchange
+  queue:
+    user-register-command: authapi.user.register.command.queue
+    user-register-reply: authapi.user.register.reply.queue
+    compensate-user-register-command: authapi.user.register.compensate.command.queue
+  routing-key:
+    user-register-command: authapi.user.register.command
+    user-register-reply: authapi.user.register.reply
+    compensate-user-register-command: authapi.user.register.compensate.command

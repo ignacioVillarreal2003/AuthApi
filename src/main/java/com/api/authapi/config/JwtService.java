@@ -44,7 +44,7 @@ public class JwtService {
         extraClaims.put("role", user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList());
-        return buildToken(extraClaims, user, jwtProperties.getExpirationToken());
+        return buildToken(extraClaims, user, jwtProperties.getExpiration().getAccessTokenMs());
     }
 
     public String generateRefreshToken(User user) {
@@ -53,7 +53,7 @@ public class JwtService {
         extraClaims.put("role", user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList());
-        return buildToken(extraClaims, user, jwtProperties.getExpirationRefreshToken());
+        return buildToken(extraClaims, user, jwtProperties.getExpiration().getRefreshTokenMs());
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {

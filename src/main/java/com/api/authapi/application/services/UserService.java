@@ -1,7 +1,7 @@
 package com.api.authapi.application.services;
 
+import com.api.authapi.application.helpers.AuthHelper;
 import com.api.authapi.config.AuthenticatedUserProvider;
-import com.api.authapi.config.JwtService;
 import com.api.authapi.domain.dtos.user.*;
 import com.api.authapi.domain.enums.Role;
 import com.api.authapi.domain.models.User;
@@ -10,9 +10,6 @@ import com.api.authapi.infraestructure.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,12 +28,11 @@ public class UserService {
     private final UserRoleService userRoleService;
     private final PasswordEncoder passwordEncoder;
     private final UserResponseMapper userResponseMapper;
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
     private final AuthenticatedUserProvider authenticatedUserProvider;
+    private final AuthHelper authHelper;
 
     @Transactional
-    public AuthResponse register(RegisterRequest request) {
+    public AuthResponse register(RegisterUserCommand request) {
         Optional<User> existing = userRepository.findByEmail(request.email());
 
         if (existing.isPresent()) {
@@ -50,9 +46,9 @@ public class UserService {
                 throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Passwords do not match");
             }
 
-            List<Role> newRoles = request.roles()
-                    .stream()
-                    .filter(role -> !user.getRoles().contains(role))
+            List<Role> newRoles = request.roles().stream()
+                    .filter(role -> user.getRoles().stream()
+                            .anyMatch(userRole -> userRole.getRole().equals(role)))
                     .toList();
 
             if (newRoles.isEmpty()) {
@@ -65,7 +61,7 @@ public class UserService {
 
             userRepository.save(user);
 
-            return getAuthResponse(user);
+            return authHelper.getAuthResponse(user);
         }
 
         User user = userRepository.save(
@@ -80,44 +76,7 @@ public class UserService {
             userRoleService.createUserRole(user, role);
         });
 
-        return getAuthResponse(user);
-    }
-
-    public AuthResponse login(LoginRequest request) {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            request.email(),
-                            request.password()
-                    )
-            );
-        }
-        catch (BadCredentialsException ex) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
-        }
-
-        User user = userRepository.findByEmailAndEnabledTrue(request.email())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-
-        return getAuthResponse(user);
-    }
-
-    public void logout() {
-        User existingUser = authenticatedUserProvider.getAuthenticatedUser();
-
-        existingUser.setRefreshToken(null);
-
-        userRepository.save(existingUser);
-    }
-
-    public AuthResponse refresh(RefreshRequest request) {
-        User existingUser = authenticatedUserProvider.getAuthenticatedUser();
-
-        if (!existingUser.getRefreshToken().equals(request.refreshToken())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token is incorrect");
-        }
-
-        return getAuthResponse(existingUser);
+        return authHelper.getAuthResponse(user);
     }
 
     public UserResponse updateUser(UpdateUserRequest request) {
@@ -164,17 +123,5 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    private AuthResponse getAuthResponse(User user) {
-        String token = jwtService.generateToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
 
-        user.setRefreshToken(refreshToken);
-        userRepository.save(user);
-
-        return AuthResponse.builder()
-                .token(token)
-                .refreshToken(user.getRefreshToken())
-                .user(userResponseMapper.apply(user))
-                .build();
-    }
 }

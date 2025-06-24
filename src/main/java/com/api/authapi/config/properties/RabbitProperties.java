@@ -10,23 +10,29 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Setter
 public class RabbitProperties {
-    private String exchange;
+    private Exchange exchange;
     private Queue queue;
     private RoutingKey routingKey;
 
     @Getter
     @Setter
+    public static class Exchange {
+        private String userRegister;
+    }
+
+    @Getter
+    @Setter
     public static class Queue {
-        private String queueRegistrationRequest;
-        private String queueRegistrationResponse;
-        private String queueRegistrationRollback;
+        private String userRegisterCommand;
+        private String userRegisterReply;
+        private String compensateUserRegisterCommand;
     }
 
     @Getter
     @Setter
     public static class RoutingKey {
-        private String routingKeyRegistrationRequest;
-        private String routingKeyRegistrationResponse;
-        private String routingKeyRegistrationRollback;
+        private String userRegisterCommand;
+        private String userRegisterReply;
+        private String compensateUserRegisterCommand;
     }
 }

@@ -17,47 +17,47 @@ public class RabbitConfig {
     private final RabbitProperties rabbitProperties;
 
     @Bean
-    public TopicExchange exchange() {
-        return new TopicExchange(rabbitProperties.getExchange());
+    public TopicExchange userRegisterExchange() {
+        return new TopicExchange(rabbitProperties.getExchange().getUserRegister());
     }
 
     @Bean
-    public Queue queueRegistrationRequest() {
-        return new Queue(rabbitProperties.getQueue().getQueueRegistrationRequest());
+    public Queue userRegisterCommandQueue() {
+        return new Queue(rabbitProperties.getQueue().getUserRegisterCommand());
     }
 
     @Bean
-    public Queue queueRegistrationResponse() {
-        return new Queue(rabbitProperties.getQueue().getQueueRegistrationResponse());
+    public Queue userRegisterReplyQueue() {
+        return new Queue(rabbitProperties.getQueue().getUserRegisterReply());
     }
 
     @Bean
-    public Queue queueRegistrationRollback() {
-        return new Queue(rabbitProperties.getQueue().getQueueRegistrationRollback());
+    public Queue compensateUserRegisterCommandQueue() {
+        return new Queue(rabbitProperties.getQueue().getCompensateUserRegisterCommand());
     }
 
     @Bean
-    public Binding bindingRegistrationRequest() {
+    public Binding bindingUserRegisterCommand() {
         return BindingBuilder
-                .bind(queueRegistrationRequest())
-                .to(exchange())
-                .with(rabbitProperties.getQueue().getQueueRegistrationRequest());
+                .bind(userRegisterCommandQueue())
+                .to(userRegisterExchange())
+                .with(rabbitProperties.getRoutingKey().getUserRegisterCommand());
     }
 
     @Bean
-    public Binding bindingRegistrationResponse() {
+    public Binding bindingUserRegisterReply() {
         return BindingBuilder
-                .bind(queueRegistrationResponse())
-                .to(exchange())
-                .with(rabbitProperties.getQueue().getQueueRegistrationResponse());
+                .bind(userRegisterReplyQueue())
+                .to(userRegisterExchange())
+                .with(rabbitProperties.getRoutingKey().getUserRegisterReply());
     }
 
     @Bean
-    public Binding bindingRegistrationRollback() {
+    public Binding bindingCompensateUserRegisterCommand() {
         return BindingBuilder
-                .bind(queueRegistrationRollback())
-                .to(exchange())
-                .with(rabbitProperties.getQueue().getQueueRegistrationRollback());
+                .bind(compensateUserRegisterCommandQueue())
+                .to(userRegisterExchange())
+                .with(rabbitProperties.getRoutingKey().getCompensateUserRegisterCommand());
     }
 
     @Bean

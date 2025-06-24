@@ -1,22 +1,22 @@
-package com.api.authapi.api.producer;
+package com.api.authapi.api.producers;
 
 import com.api.authapi.config.properties.RabbitProperties;
-import com.api.authapi.domain.dtos.user.RegisterResponse;
+import com.api.authapi.domain.dtos.user.RegisterUserReply;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class RabbitProducer {
+public class RegisterUserSagaPublisher {
 
     private final RabbitTemplate rabbitTemplate;
     private final RabbitProperties rabbitProperties;
 
-    public void sendMessageRegistrationResponse(RegisterResponse message) {
+    public void publishRegisterUserReply(RegisterUserReply message) {
         rabbitTemplate.convertAndSend(
-                rabbitProperties.getExchange(),
-                rabbitProperties.getRoutingKey().getRoutingKeyRegistrationResponse(),
+                rabbitProperties.getExchange().getUserRegister(),
+                rabbitProperties.getRoutingKey().getUserRegisterReply(),
                 message
         );
     }

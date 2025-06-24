@@ -77,7 +77,7 @@ class UserServiceTest {
 
     @Test
     void register_ShouldReturnAuthResponse_WhenDataIsCorrect() {
-        RegisterRequest request = new RegisterRequest(email, password);
+        RegisterUserCommand request = new RegisterUserCommand(email, password);
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
         when(passwordEncoder.encode(password)).thenReturn(encodedPassword);
@@ -94,7 +94,7 @@ class UserServiceTest {
 
     @Test
     void register_ShouldReturnConflict_WhenUserAlreadyExists() {
-        RegisterRequest request = new RegisterRequest(existingEmail, password);
+        RegisterUserCommand request = new RegisterUserCommand(existingEmail, password);
 
         when(userRepository.findByEmail(existingEmail)).thenReturn(Optional.of(existingUser));
 
@@ -106,7 +106,7 @@ class UserServiceTest {
 
     @Test
     void login_ShouldReturnAuthResponse_WhenDataIsCorrect() {
-        LoginRequest request = new LoginRequest(existingEmail, password);
+        LoginUserRequest request = new LoginUserRequest(existingEmail, password);
 
         when(authenticationManager.authenticate(any())).thenReturn(mock(Authentication.class));
         when(userRepository.findByEmail(existingEmail)).thenReturn(Optional.of(existingUser));
@@ -123,7 +123,7 @@ class UserServiceTest {
 
     @Test
     void login_ShouldReturnUnauthorized_WhenEmailDoesNotExist() {
-        LoginRequest request = new LoginRequest(email, password);
+        LoginUserRequest request = new LoginUserRequest(email, password);
 
         doThrow(new BadCredentialsException("Bad credentials")).when(authenticationManager).authenticate(any());
 
@@ -135,7 +135,7 @@ class UserServiceTest {
 
     @Test
     void login_ShouldReturnUnauthorized_WhenPasswordDoesNotMatch() {
-        LoginRequest request = new LoginRequest(email, "incorrectPassword");
+        LoginUserRequest request = new LoginUserRequest(email, "incorrectPassword");
 
         doThrow(new BadCredentialsException("Bad credentials")).when(authenticationManager).authenticate(any());
 
@@ -156,7 +156,7 @@ class UserServiceTest {
 
     @Test
     void refresh_ShouldReturnAuthResponse_WhenRefreshTokenIsValid() {
-        RefreshRequest request = new RefreshRequest(refreshToken);
+        RefreshTokenRequest request = new RefreshTokenRequest(refreshToken);
 
         when(authenticatedUserProvider.getAuthenticatedUser()).thenReturn(existingUser);
         when(jwtService.generateToken(any(User.class))).thenReturn(token);
@@ -172,7 +172,7 @@ class UserServiceTest {
 
     @Test
     void refresh_ShouldReturnUnauthorized_WhenRefreshTokenIsInvalid() {
-        RefreshRequest request = new RefreshRequest("fakeRefreshToken");
+        RefreshTokenRequest request = new RefreshTokenRequest("fakeRefreshToken");
 
         when(authenticatedUserProvider.getAuthenticatedUser()).thenReturn(existingUser);
 

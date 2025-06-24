@@ -22,7 +22,7 @@ public class UserRoleService {
     private final UserRepository userRepository;
     private final UserRoleResponseMapper userRoleResponseMapper;
 
-    public UserRoleResponse createUserRole(Long userId, Role role) {
+    public UserRoleResponse assignRole(Long userId, Role role) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
@@ -42,7 +42,7 @@ public class UserRoleService {
         );
     }
 
-    public void deleteUserRoleByUserAndRole(Long userId, Role role) {
+    public void removeRole(Long userId, Role role) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
@@ -56,7 +56,7 @@ public class UserRoleService {
         userRoleRepository.delete(userRole);
     }
 
-    public void deleteAllUserRoleByUser(Long userId) {
+    public void removeAllRoles(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 

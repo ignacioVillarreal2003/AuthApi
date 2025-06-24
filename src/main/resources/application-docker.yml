@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://postgresql_auth_api:5432/authdb
+    url: jdbc:postgresql://postgresql:5432/main_db
     username: IgnacioVillarreal
     password: 12345678
   jpa:
@@ -9,19 +9,26 @@ spring:
     show-sql: true
     properties:
       hibernate:
+        default_schema: auth_schema
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
   rabbitmq:
-    host: rabbitmq_auth_api
+    host: rabbitmq
     port: 5672
-    username: IgnacioVillarreal
+    username: ignacio
     password: 12345678
+
+  flyway:
+    enabled: true
+    schemas: auth_api
+    locations: classpath:db/migration
 
 jwt:
   secret: 23e586808ea364607079ec5b830ba702e80680339864b175eb2f5a13abd214e7
-  expiration_token: 1440000
-  expiration_refresh_token: 10080000
+  expiration:
+    access-token-ms: 1440000
+    refresh-token-ms: 10080000
 
 cors:
   allowed-origins:
@@ -32,14 +39,3 @@ logging:
     org:
       springframework:
         security: DEBUG
-
-rabbit:
-  exchange: user-registration-exchange
-  queue:
-    queue-registration-request: registration-request
-    queue-registration-response: registration-response
-    queue-registration-rollback: registration-rollback
-  routingKey:
-    routingKey-registration-request: registration-request
-    routingKey-registration-response: registration-response
-    routing-key-registration-rollback: registration-rollback

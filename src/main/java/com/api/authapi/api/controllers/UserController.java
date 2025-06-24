@@ -15,40 +15,22 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        AuthResponse response = userService.login(request);
-        return ResponseEntity.ok(response);
-    }
-
-    @PutMapping("/logout")
-    public ResponseEntity<Void> logout() {
-        userService.logout();
-        return ResponseEntity.noContent().build();
-    }
-
-    @PostMapping("/refresh")
-    public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshRequest refreshToken) {
-        AuthResponse response = userService.refresh(refreshToken);
-        return ResponseEntity.ok(response);
-    }
-
-    @PutMapping()
+    @PutMapping("/me")
     public ResponseEntity<UserResponse> updateUser(@Valid @RequestBody UpdateUserRequest userDto) {
         UserResponse response = userService.updateUser(userDto);
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{userId}/enable")
+    @PutMapping("/{id}/enable")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<Void> enableUser(@PathVariable Long userId) {
+    public ResponseEntity<Void> enableUser(@PathVariable("id") Long userId) {
         userService.enableUser(userId);
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{userId}/disable")
+    @PutMapping("/{id}/disable")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    public ResponseEntity<Void> disableUser(@PathVariable Long userId) {
+    public ResponseEntity<Void> disableUser(@PathVariable("id") Long userId) {
         userService.disableUser(userId);
         return ResponseEntity.noContent().build();
     }
