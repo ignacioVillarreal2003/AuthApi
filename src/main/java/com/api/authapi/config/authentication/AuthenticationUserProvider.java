@@ -1,4 +1,4 @@
-package com.api.authapi.config;
+package com.api.authapi.config.authentication;
 
 import com.api.authapi.domain.models.User;
 import com.api.authapi.infraestructure.persistence.repositories.UserRepository;
@@ -10,17 +10,21 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Component
 @RequiredArgsConstructor
-public class AuthenticatedUserProvider {
+public class AuthenticationUserProvider {
 
     private final UserRepository userRepository;
 
-    private String getAuthenticatedUsername() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
+    public Long getUserId() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal instanceof UserPrincipal userPrincipal) {
+            return userPrincipal.getUserId();
+        }
+        return null;
     }
 
     public User getAuthenticatedUser() {
-        String email = getAuthenticatedUsername();
-        return userRepository.findByEmailAndEnabledTrue(email).orElseThrow(() ->
+        Long userId = getUserId();
+        return userRepository.findByIdAndEnabledTrue(userId).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authenticated"));
     }
 }

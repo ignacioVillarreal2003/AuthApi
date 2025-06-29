@@ -15,7 +15,7 @@ public class RegisterUserSagaPublisher {
 
     public void publishRegisterUserReply(RegisterUserReply message) {
         rabbitTemplate.convertAndSend(
-                rabbitProperties.getExchange().getUserRegister(),
+                rabbitProperties.getExchange().getAuth(),
                 rabbitProperties.getRoutingKey().getUserRegisterReply(),
                 message
         );

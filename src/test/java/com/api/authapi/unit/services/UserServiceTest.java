@@ -2,8 +2,8 @@ package com.api.authapi.unit.services;
 
 import com.api.authapi.application.mappers.UserResponseMapper;
 import com.api.authapi.application.services.UserService;
-import com.api.authapi.config.AuthenticatedUserProvider;
-import com.api.authapi.config.JwtService;
+import com.api.authapi.config.authentication.AuthenticationUserProvider;
+import com.api.authapi.config.authentication.JwtService;
 import com.api.authapi.domain.dtos.user.*;
 import com.api.authapi.domain.enums.Role;
 import com.api.authapi.domain.models.User;
@@ -46,7 +46,7 @@ class UserServiceTest {
     private JwtService jwtService;
 
     @Mock
-    private AuthenticatedUserProvider authenticatedUserProvider;
+    private AuthenticationUserProvider authenticatedUserProvider;
 
     @InjectMocks
     private UserService authService;

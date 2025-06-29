@@ -17,8 +17,8 @@ public class RabbitConfig {
     private final RabbitProperties rabbitProperties;
 
     @Bean
-    public TopicExchange userRegisterExchange() {
-        return new TopicExchange(rabbitProperties.getExchange().getUserRegister());
+    public TopicExchange authExchange() {
+        return new TopicExchange(rabbitProperties.getExchange().getAuth());
     }
 
     @Bean
@@ -40,7 +40,7 @@ public class RabbitConfig {
     public Binding bindingUserRegisterCommand() {
         return BindingBuilder
                 .bind(userRegisterCommandQueue())
-                .to(userRegisterExchange())
+                .to(authExchange())
                 .with(rabbitProperties.getRoutingKey().getUserRegisterCommand());
     }
 
@@ -48,7 +48,7 @@ public class RabbitConfig {
     public Binding bindingUserRegisterReply() {
         return BindingBuilder
                 .bind(userRegisterReplyQueue())
-                .to(userRegisterExchange())
+                .to(authExchange())
                 .with(rabbitProperties.getRoutingKey().getUserRegisterReply());
     }
 
@@ -56,7 +56,7 @@ public class RabbitConfig {
     public Binding bindingCompensateUserRegisterCommand() {
         return BindingBuilder
                 .bind(compensateUserRegisterCommandQueue())
-                .to(userRegisterExchange())
+                .to(authExchange())
                 .with(rabbitProperties.getRoutingKey().getCompensateUserRegisterCommand());
     }
 

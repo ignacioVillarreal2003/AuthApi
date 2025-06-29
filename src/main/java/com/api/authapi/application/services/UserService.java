@@ -1,7 +1,7 @@
 package com.api.authapi.application.services;
 
 import com.api.authapi.application.helpers.AuthHelper;
-import com.api.authapi.config.AuthenticatedUserProvider;
+import com.api.authapi.config.authentication.AuthenticationUserProvider;
 import com.api.authapi.domain.dtos.user.*;
 import com.api.authapi.domain.enums.Role;
 import com.api.authapi.domain.models.User;
@@ -28,7 +28,7 @@ public class UserService {
     private final UserRoleService userRoleService;
     private final PasswordEncoder passwordEncoder;
     private final UserResponseMapper userResponseMapper;
-    private final AuthenticatedUserProvider authenticatedUserProvider;
+    private final AuthenticationUserProvider authenticatedUserProvider;
     private final AuthHelper authHelper;
 
     @Transactional

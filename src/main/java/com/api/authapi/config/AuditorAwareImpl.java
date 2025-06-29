@@ -1,22 +1,25 @@
 package com.api.authapi.config;
 
+import com.api.authapi.config.authentication.AuthenticationUserProvider;
+import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.AuditorAware;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 @Component("auditorAware")
-public class AuditorAwareImpl implements AuditorAware<String> {
+@RequiredArgsConstructor
+public class AuditorAwareImpl implements AuditorAware<Long> {
+
+    private final AuthenticationUserProvider authenticationUserProvider;
 
     @Override
-    public Optional<String> getCurrentAuditor() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return Optional.empty();
+    public @NotNull Optional<Long> getCurrentAuditor() {
+        Long userId = authenticationUserProvider.getUserId();
+        if (userId != null) {
+            return Optional.of(userId);
         }
-
-        return Optional.of(authentication.getName());
+        return Optional.empty();
     }
 }

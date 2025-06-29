@@ -1,7 +1,7 @@
 spring:
   datasource:
     url: jdbc:postgresql://postgresql:5432/main_db
-    username: IgnacioVillarreal
+    username: ignacio
     password: 12345678
   jpa:
     hibernate:
@@ -21,7 +21,7 @@ spring:
 
   flyway:
     enabled: true
-    schemas: auth_api
+    schemas: auth_schema
     locations: classpath:db/migration
 
 jwt:
@@ -32,7 +32,7 @@ jwt:
 
 cors:
   allowed-origins:
-    - http://localhost:4200/
+    - http://rescuemeapp:4200/
 
 logging:
   level:

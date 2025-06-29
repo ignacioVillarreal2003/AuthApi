@@ -1,4 +1,4 @@
-package com.api.authapi.config.handlers;
+package com.api.authapi.application.handlers;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

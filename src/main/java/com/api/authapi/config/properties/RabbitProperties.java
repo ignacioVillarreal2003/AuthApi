@@ -17,7 +17,7 @@ public class RabbitProperties {
     @Getter
     @Setter
     public static class Exchange {
-        private String userRegister;
+        private String auth;
     }
 
     @Getter

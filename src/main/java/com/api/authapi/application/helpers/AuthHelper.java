@@ -1,7 +1,7 @@
 package com.api.authapi.application.helpers;
 
 import com.api.authapi.application.mappers.UserResponseMapper;
-import com.api.authapi.config.JwtService;
+import com.api.authapi.config.authentication.JwtService;
 import com.api.authapi.domain.dtos.user.AuthResponse;
 import com.api.authapi.domain.models.User;
 import com.api.authapi.infraestructure.persistence.repositories.UserRepository;

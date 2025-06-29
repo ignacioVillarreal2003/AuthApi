@@ -13,9 +13,5 @@ import java.util.List;
 @Setter
 public class CorsProperties {
     private List<String> allowedOrigins;
-
-    public String getAllowedOriginsAsCommaSeparatedString() {
-        return String.join(",", allowedOrigins);
-    }
 }
 

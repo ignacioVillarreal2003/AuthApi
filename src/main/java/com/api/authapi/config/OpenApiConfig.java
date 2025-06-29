@@ -22,8 +22,7 @@ public class OpenApiConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("Auth API")
-                        .version("1.0"))
+                        .title("Auth API"))
                 .addSecurityItem(new SecurityRequirement().addList("BearerAuth"))
                 .components(new Components().addSecuritySchemes("BearerAuth",
                         new io.swagger.v3.oas.models.security.SecurityScheme()

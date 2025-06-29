@@ -21,7 +21,7 @@ spring:
 
   flyway:
     enabled: true
-    schemas: auth_api
+    schemas: auth_schema
     locations: classpath:db/migration
 
 jwt:

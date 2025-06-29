@@ -1,7 +1,7 @@
 package com.api.authapi.application.services;
 
 import com.api.authapi.application.helpers.AuthHelper;
-import com.api.authapi.config.AuthenticatedUserProvider;
+import com.api.authapi.config.authentication.AuthenticationUserProvider;
 import com.api.authapi.domain.dtos.user.*;
 import com.api.authapi.domain.models.User;
 import com.api.authapi.infraestructure.persistence.repositories.UserRepository;
@@ -22,7 +22,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final AuthHelper authHelper;
     private final AuthenticationManager authenticationManager;
-    private final AuthenticatedUserProvider authenticatedUserProvider;
+    private final AuthenticationUserProvider authenticatedUserProvider;
 
 
     public AuthResponse login(LoginUserRequest request) {

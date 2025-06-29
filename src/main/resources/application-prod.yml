@@ -21,7 +21,7 @@ spring:
 
   flyway:
     enabled: true
-    schemas: auth_api
+    schemas: auth_schema
     locations: classpath:db/migration
 
 jwt:
@@ -31,4 +31,4 @@ jwt:
     refresh-token-ms: ${JWT_EXPIRATION_REFRESH_TOKEN}
 
 cors:
-  allowed-origins: ${CORS_ALLOWED_ORIGIN}
+  allowed-origins: ${CORS_ALLOWED_ORIGINS}
