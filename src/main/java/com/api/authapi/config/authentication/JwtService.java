@@ -1,17 +1,22 @@
 package com.api.authapi.config.authentication;
 
 import com.api.authapi.config.properties.JwtProperties;
+import com.api.authapi.domain.models.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.jackson.io.JacksonDeserializer;
+import io.jsonwebtoken.jackson.io.JacksonSerializer;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 @Service
@@ -30,6 +35,35 @@ public class JwtService {
 
     public List<String> extractUserRole(String token) {
         return extractClaims(token, claims -> claims.get("role", List.class));
+    }
+
+    public String generateToken(User user) {
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("id", user.getId());
+        extraClaims.put("role", user.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList());
+        return buildToken(extraClaims, user, jwtProperties.getExpiration().getAccessTokenMs());
+    }
+
+    public String generateRefreshToken(User user) {
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("id", user.getId());
+        extraClaims.put("role", user.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toList());
+        return buildToken(extraClaims, user, jwtProperties.getExpiration().getRefreshTokenMs());
+    }
+
+    private String buildToken(Map<String, Object> extraClaims, User user, long expiration) {
+        return Jwts.builder()
+                .serializeToJsonWith(new JacksonSerializer<>())
+                .claims(extraClaims)
+                .subject(user.getUsername())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(getSigningKey(), Jwts.SIG.HS256)
+                .compact();
     }
 
     public boolean isTokenExpired(String token) {
