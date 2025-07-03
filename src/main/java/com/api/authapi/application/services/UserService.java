@@ -32,7 +32,7 @@ public class UserService {
     private final AuthHelper authHelper;
 
     @Transactional
-    public AuthResponse register(RegisterUserCommand request) {
+    public AuthResponse register(UserRegisterCommand request) {
         Optional<User> existing = userRepository.findByEmail(request.email());
 
         if (existing.isPresent()) {
@@ -122,6 +122,4 @@ public class UserService {
 
         userRepository.delete(user);
     }
-
-
 }

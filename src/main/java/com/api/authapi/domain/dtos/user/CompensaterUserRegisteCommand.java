@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
-public record CompensateRegisterUserCommand (
+public record CompensaterUserRegisteCommand (
     @NotNull(message = "Saga id is required")
     UUID sagaId,
 

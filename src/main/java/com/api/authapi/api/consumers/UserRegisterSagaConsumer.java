@@ -1,11 +1,12 @@
 package com.api.authapi.api.consumers;
 
-import com.api.authapi.api.producers.RegisterUserSagaPublisher;
+import com.api.authapi.api.producers.UserRegisterSagaPublisher;
 import com.api.authapi.application.services.UserService;
 import com.api.authapi.domain.dtos.user.AuthResponse;
-import com.api.authapi.domain.dtos.user.CompensateRegisterUserCommand;
-import com.api.authapi.domain.dtos.user.RegisterUserCommand;
-import com.api.authapi.domain.dtos.user.RegisterUserReply;
+import com.api.authapi.domain.dtos.user.CompensaterUserRegisteCommand;
+import com.api.authapi.domain.dtos.user.UserRegisterCommand;
+import com.api.authapi.domain.dtos.user.UserRegisterReply;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -20,18 +21,18 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 @Validated
-public class RegisterUserSagaConsumer {
+public class UserRegisterSagaConsumer {
 
     private final UserService authService;
-    private final RegisterUserSagaPublisher registrationPublisher;
+    private final UserRegisterSagaPublisher userRegisterSagaPublisher;
 
     @RabbitListener(queues = "${rabbit.queue.user-register-command}")
-    public void handleRegisterUserCommand(@Valid @Payload RegisterUserCommand message) {
+    public void handleUserRegisterCommand(@Valid @Payload UserRegisterCommand message) {
         UUID sagaId = message.sagaId();
         try {
             AuthResponse authResponse = authService.register(message);
 
-            RegisterUserReply response = RegisterUserReply.builder()
+            UserRegisterReply response = UserRegisterReply.builder()
                     .sagaId(sagaId)
                     .userId(authResponse.getUser().getId())
                     .success(true)
@@ -39,15 +40,15 @@ public class RegisterUserSagaConsumer {
                     .refreshToken(authResponse.getRefreshToken())
                     .build();
 
-            registrationPublisher.publishRegisterUserReply(response);
+            userRegisterSagaPublisher.publishUserRegisterReply(response);
         }
         catch (ResponseStatusException ex) {
-            RegisterUserReply response = RegisterUserReply.builder()
+            UserRegisterReply response = UserRegisterReply.builder()
                     .sagaId(sagaId)
                     .success(false)
                     .errorMessage("[" + ex.getStatusCode().value() + "] " + ex.getReason())
                     .build();
-            registrationPublisher.publishRegisterUserReply(response);
+            userRegisterSagaPublisher.publishUserRegisterReply(response);
         }
         catch (Exception ex) {
             if (ex.getCause() instanceof MethodArgumentNotValidException validationEx) {
@@ -55,26 +56,26 @@ public class RegisterUserSagaConsumer {
                 validationEx.getBindingResult().getFieldErrors().forEach(fe ->
                         errors.append(fe.getField()).append(": ").append(fe.getDefaultMessage()).append("; ")
                 );
-                RegisterUserReply response = RegisterUserReply.builder()
+                UserRegisterReply response = UserRegisterReply.builder()
                         .sagaId(sagaId)
                         .success(false)
                         .errorMessage("[400] " + errors)
                         .build();
-                registrationPublisher.publishRegisterUserReply(response);
+                userRegisterSagaPublisher.publishUserRegisterReply(response);
             }
             else {
-                RegisterUserReply response = RegisterUserReply.builder()
+                UserRegisterReply response = UserRegisterReply.builder()
                         .sagaId(sagaId)
                         .success(false)
                         .errorMessage("[500] " + ex.getMessage())
                         .build();
-                registrationPublisher.publishRegisterUserReply(response);
+                userRegisterSagaPublisher.publishUserRegisterReply(response);
             }
         }
     }
 
     @RabbitListener(queues = "${rabbit.queue.compensate-user-register-command}")
-    public void handleCompensateRegisterUserCommand(@Valid @Payload CompensateRegisterUserCommand message) {
+    public void handleCompensateRegisterUserCommand(@Valid @Payload CompensaterUserRegisteCommand message) {
         Long userId = message.userId();
         authService.deleteUserPermanently(userId);
     }

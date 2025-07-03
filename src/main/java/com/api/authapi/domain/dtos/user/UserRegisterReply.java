@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.UUID;
 
 @Builder
-public class RegisterUserReply implements Serializable {
+public class UserRegisterReply implements Serializable {
         private UUID sagaId;
         private Long userId;
         private boolean success;
