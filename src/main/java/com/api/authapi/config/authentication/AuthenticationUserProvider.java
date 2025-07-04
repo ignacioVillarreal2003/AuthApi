@@ -15,7 +15,14 @@ public class AuthenticationUserProvider {
     private final UserRepository userRepository;
 
     public Long getUserId() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        var context = SecurityContextHolder.getContext();
+        var authentication = context.getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return null;
+        }
+
+        Object principal = authentication.getPrincipal();
         if (principal instanceof UserPrincipal userPrincipal) {
             return userPrincipal.getUserId();
         }

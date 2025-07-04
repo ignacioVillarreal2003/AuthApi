@@ -41,7 +41,7 @@ public class AuthService {
         User user = userRepository.findByEmailAndEnabledTrue(request.email())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
-        return authHelper.getAuthResponse(user);
+        return authHelper.getAuthResponse(user.getId());
     }
 
     public void logout() {
@@ -59,6 +59,6 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token is incorrect");
         }
 
-        return authHelper.getAuthResponse(existingUser);
+        return authHelper.getAuthResponse(existingUser.getId());
     }
 }

@@ -16,7 +16,10 @@ public class AuthHelper {
     private final UserResponseMapper userResponseMapper;
     private final JwtService jwtService;
 
-    public AuthResponse getAuthResponse(User user) {
+    public AuthResponse getAuthResponse(Long userId) {
+        User user = userRepository.findByIdWithRoles(userId)
+                .orElseThrow(() -> new IllegalStateException("User not found"));
+
         String token = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 

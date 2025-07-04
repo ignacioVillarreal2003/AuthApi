@@ -61,7 +61,7 @@ public class UserService {
 
             userRepository.save(user);
 
-            return authHelper.getAuthResponse(user);
+            return authHelper.getAuthResponse(user.getId());
         }
 
         User user = userRepository.save(
@@ -76,7 +76,7 @@ public class UserService {
             userRoleService.createUserRole(user, role);
         });
 
-        return authHelper.getAuthResponse(user);
+        return authHelper.getAuthResponse(user.getId());
     }
 
     public UserResponse updateUser(UpdateUserRequest request) {
