@@ -1,11 +1,16 @@
 package com.api.authapi.domain.dtos.user;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import java.io.Serializable;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
-@Getter
-public class AuthResponse {
+public class AuthResponse implements Serializable {
     private String token;
     private String refreshToken;
     private UserResponse user;
