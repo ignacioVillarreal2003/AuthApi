@@ -1,31 +1,10 @@
 package com.api.authapi.unit.services;
 
-import com.api.authapi.application.mappers.UserResponseMapper;
-import com.api.authapi.application.services.UserService;
-import com.api.authapi.config.authentication.AuthenticationUserProvider;
-import com.api.authapi.config.authentication.JwtService;
-import com.api.authapi.domain.dtos.user.*;
 import com.api.authapi.domain.enums.Role;
-import com.api.authapi.domain.models.User;
-import com.api.authapi.infraestructure.persistence.repositories.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {

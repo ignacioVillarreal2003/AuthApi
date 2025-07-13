@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/v1/auth/register",
+                        auth.requestMatchers(
                                         "/api/v1/auth/login",
                                         "/v2/api-docs",
                                         "/v3/api-docs",
@@ -45,8 +45,10 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
+                .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(ex -> ex
+                                .authenticationEntryPoint((req, res, ex2) -> res.sendError(401))
+                                .accessDeniedHandler((req, res, ex3) -> res.sendError(403)));
         return http.build();
     }
 

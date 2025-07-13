@@ -1,4 +1,4 @@
-package com.api.authapi.domain.dtos.user;
+package com.api.authapi.domain.dtos.auth;
 
 import jakarta.validation.constraints.NotNull;
 

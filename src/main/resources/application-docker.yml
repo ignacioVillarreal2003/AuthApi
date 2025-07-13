@@ -18,11 +18,26 @@ spring:
     port: 5672
     username: ignacio
     password: 12345678
+    listener:
+      retry:
+        enabled: true
+        initial-interval: 1000
+        max-attempts: 5
+        multiplier: 2.0
+    template:
+      mandatory: true
 
   flyway:
     enabled: true
     schemas: auth_schema
     locations: classpath:db/migration
+
+  cache:
+    type: redis
+  data:
+    redis:
+      host: redis
+      port: 6379
 
 jwt:
   secret: 23e586808ea364607079ec5b830ba702e80680339864b175eb2f5a13abd214e7
@@ -33,6 +48,18 @@ jwt:
 cors:
   allowed-origins:
     - http://rescuemeapp:4200/
+
+rabbit:
+  exchange:
+    auth: authApi.exchange
+  queue:
+    user-register-command: authApi.userRegisterCommand.queue
+    user-register-reply: authApi.userRegisterReply.queue
+    compensate-user-register-command: authApi.userRegisterCompensateCommand.queue
+  routing-key:
+    user-register-command: authApi.userRegisterCommand.routingKey
+    user-register-reply: authApi.userRegisterReply.routingKey
+    compensate-user-register-command: authApi.userRegisterCompensateCommand.routingKey
 
 logging:
   level:

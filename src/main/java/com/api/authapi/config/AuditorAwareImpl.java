@@ -10,15 +10,15 @@ import java.util.Optional;
 
 @Component("auditorAware")
 @RequiredArgsConstructor
-public class AuditorAwareImpl implements AuditorAware<Long> {
+public class AuditorAwareImpl implements AuditorAware<String> {
 
     private final AuthenticationUserProvider authenticationUserProvider;
 
     @Override
-    public @NotNull Optional<Long> getCurrentAuditor() {
-        Long userId = authenticationUserProvider.getUserId();
-        if (userId != null) {
-            return Optional.of(userId);
+    public @NotNull Optional<String> getCurrentAuditor() {
+        String username = authenticationUserProvider.getUser().getUsername();
+        if (username != null) {
+            return Optional.of(username);
         }
         return Optional.empty();
     }

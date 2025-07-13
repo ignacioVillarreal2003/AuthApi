@@ -1,7 +1,7 @@
 package com.api.authapi.api.producers;
 
 import com.api.authapi.config.properties.RabbitProperties;
-import com.api.authapi.domain.dtos.user.UserRegisterReply;
+import com.api.authapi.domain.dtos.auth.UserRegisterReply;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;

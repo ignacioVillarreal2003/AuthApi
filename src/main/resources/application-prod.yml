@@ -18,11 +18,26 @@ spring:
     port: ${RABBITMQ_PORT}
     username: ${RABBITMQ_USERNAME}
     password: ${RABBITMQ_PASSWORD}
+    listener:
+      retry:
+        enabled: true
+        initial-interval: 1000
+        max-attempts: 5
+        multiplier: 2.0
+    template:
+      mandatory: true
 
   flyway:
     enabled: true
     schemas: auth_schema
     locations: classpath:db/migration
+
+  cache:
+    type: redis
+  data:
+    redis:
+      host: ${REDIS_HOST_NAME}
+      port: ${REDIS_HOST_PORT}
 
 jwt:
   secret: ${JWT_SECRET}
@@ -32,3 +47,15 @@ jwt:
 
 cors:
   allowed-origins: ${CORS_ALLOWED_ORIGINS}
+
+rabbit:
+  exchange:
+    auth: authApi.exchange
+  queue:
+    user-register-command: authApi.userRegisterCommand.queue
+    user-register-reply: authApi.userRegisterReply.queue
+    compensate-user-register-command: authApi.userRegisterCompensateCommand.queue
+  routing-key:
+    user-register-command: authApi.userRegisterCommand.routingKey
+    user-register-reply: authApi.userRegisterReply.routingKey
+    compensate-user-register-command: authApi.userRegisterCompensateCommand.routingKey

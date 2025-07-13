@@ -1,12 +1,14 @@
 package com.api.authapi.api.consumers;
 
 import com.api.authapi.api.producers.UserRegisterSagaPublisher;
+import com.api.authapi.application.services.AuthService;
+import com.api.authapi.application.services.UserRegisterSagaService;
 import com.api.authapi.application.services.UserService;
-import com.api.authapi.domain.dtos.user.AuthResponse;
-import com.api.authapi.domain.dtos.user.CompensaterUserRegisteCommand;
-import com.api.authapi.domain.dtos.user.UserRegisterCommand;
-import com.api.authapi.domain.dtos.user.UserRegisterReply;
-
+import com.api.authapi.domain.constants.SagaStep;
+import com.api.authapi.domain.dtos.auth.AuthResponse;
+import com.api.authapi.domain.dtos.auth.CompensateUserRegisterCommand;
+import com.api.authapi.domain.dtos.auth.UserRegisterCommand;
+import com.api.authapi.domain.dtos.auth.UserRegisterReply;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -23,32 +25,40 @@ import java.util.UUID;
 @Validated
 public class UserRegisterSagaConsumer {
 
-    private final UserService authService;
+    private final AuthService authService;
+    private final UserService userService;
     private final UserRegisterSagaPublisher userRegisterSagaPublisher;
+    private final UserRegisterSagaService registerSagaService;
 
-    @RabbitListener(queues = "${rabbit.queue.user-register-command}")
+    @RabbitListener(queues = "${rabbit.queue.user-register-command}",
+            containerFactory = "rabbitListenerContainerFactory")
     public void handleUserRegisterCommand(@Valid @Payload UserRegisterCommand message) {
         UUID sagaId = message.sagaId();
+
+        registerSagaService.startSaga(sagaId);
+
+        if (registerSagaService.isStepCompleted(sagaId, SagaStep.USER_CREATED)) {
+            return;
+        }
+
         try {
             AuthResponse authResponse = authService.register(message);
 
-            UserRegisterReply response = UserRegisterReply.builder()
-                    .sagaId(sagaId)
-                    .userId(authResponse.getUser().getId())
-                    .success(true)
-                    .token(authResponse.getToken())
-                    .refreshToken(authResponse.getRefreshToken())
-                    .build();
+            registerSagaService.markUserCreated(sagaId, authResponse.getUser().getId());
 
-            userRegisterSagaPublisher.publishUserRegisterReply(response);
+            userRegisterSagaPublisher.publishUserRegisterReply(
+                    UserRegisterReply.builder()
+                        .sagaId(sagaId)
+                        .success(true)
+                        .token(authResponse.getToken())
+                        .refreshToken(authResponse.getRefreshToken())
+                        .build()
+            );
+
+            registerSagaService.completeSaga(sagaId);
         }
         catch (ResponseStatusException ex) {
-            UserRegisterReply response = UserRegisterReply.builder()
-                    .sagaId(sagaId)
-                    .success(false)
-                    .errorMessage("[" + ex.getStatusCode().value() + "] " + ex.getReason())
-                    .build();
-            userRegisterSagaPublisher.publishUserRegisterReply(response);
+            publishUserRegisterReplyError(sagaId, "[" + ex.getStatusCode().value() + "] " + ex.getReason());
         }
         catch (Exception ex) {
             if (ex.getCause() instanceof MethodArgumentNotValidException validationEx) {
@@ -56,27 +66,29 @@ public class UserRegisterSagaConsumer {
                 validationEx.getBindingResult().getFieldErrors().forEach(fe ->
                         errors.append(fe.getField()).append(": ").append(fe.getDefaultMessage()).append("; ")
                 );
-                UserRegisterReply response = UserRegisterReply.builder()
-                        .sagaId(sagaId)
-                        .success(false)
-                        .errorMessage("[400] " + errors)
-                        .build();
-                userRegisterSagaPublisher.publishUserRegisterReply(response);
+                publishUserRegisterReplyError(sagaId, "[400] " + errors);
             }
             else {
-                UserRegisterReply response = UserRegisterReply.builder()
-                        .sagaId(sagaId)
-                        .success(false)
-                        .errorMessage("[500] " + ex.getMessage())
-                        .build();
-                userRegisterSagaPublisher.publishUserRegisterReply(response);
+                publishUserRegisterReplyError(sagaId, "[500] " + ex.getMessage());
             }
         }
     }
 
-    @RabbitListener(queues = "${rabbit.queue.compensate-user-register-command}")
-    public void handleCompensateRegisterUserCommand(@Valid @Payload CompensaterUserRegisteCommand message) {
-        Long userId = message.userId();
-        authService.deleteUserPermanently(userId);
+    private void publishUserRegisterReplyError(UUID sagaId, String error) {
+        UserRegisterReply response = UserRegisterReply.builder()
+                .sagaId(sagaId)
+                .success(false)
+                .errorMessage(error)
+                .build();
+        userRegisterSagaPublisher.publishUserRegisterReply(response);
+    }
+
+    @RabbitListener(queues = "${rabbit.queue.compensate-user-register-command}",
+            containerFactory = "rabbitListenerContainerFactory")
+    public void handleCompensateRegisterUserCommand(@Valid @Payload CompensateUserRegisterCommand message) {
+        UUID sagaId = message.sagaId();
+
+        registerSagaService.getUserId(sagaId).ifPresent(userService::deleteUserById);
+        registerSagaService.compensateSaga(sagaId);
     }
 }

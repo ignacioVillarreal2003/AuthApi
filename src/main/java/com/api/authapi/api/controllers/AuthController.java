@@ -1,7 +1,9 @@
 package com.api.authapi.api.controllers;
 
 import com.api.authapi.application.services.AuthService;
-import com.api.authapi.domain.dtos.user.*;
+import com.api.authapi.domain.dtos.auth.AuthResponse;
+import com.api.authapi.domain.dtos.auth.LoginUserRequest;
+import com.api.authapi.domain.dtos.auth.RefreshTokenRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,13 +22,13 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/logout")
+    @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
         authService.logout();
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/token/refresh")
+    @PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshTokenRequest refreshToken) {
         AuthResponse response = authService.refresh(refreshToken);
         return ResponseEntity.ok(response);

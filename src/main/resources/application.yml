@@ -7,15 +7,3 @@ spring:
 
 server:
   port: 8080
-
-rabbit:
-  exchange:
-    auth: authApi.exchange
-  queue:
-    user-register-command: authApi.userRegisterCommand.queue
-    user-register-reply: authApi.userRegisterReply.queue
-    compensate-user-register-command: authApi.userRegisterCompensateCommand.queue
-  routing-key:
-    user-register-command: authApi.userRegisterCommand.routingKey
-    user-register-reply: authApi.userRegisterReply.routingKey
-    compensate-user-register-command: authApi.userRegisterCompensateCommand.routingKey

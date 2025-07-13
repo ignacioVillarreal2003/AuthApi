@@ -1,7 +1,7 @@
 package com.api.authapi.domain.dtos.userRole;
 
+import com.api.authapi.domain.dtos.role.RoleResponse;
 import com.api.authapi.domain.dtos.user.UserResponse;
-import com.api.authapi.domain.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +14,6 @@ import java.io.Serializable;
 @Builder
 public class UserRoleResponse implements Serializable {
     private Long id;
-    private Role role;
+    private RoleResponse role;
     private UserResponse user;
 }

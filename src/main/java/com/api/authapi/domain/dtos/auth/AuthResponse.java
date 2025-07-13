@@ -1,5 +1,6 @@
-package com.api.authapi.domain.dtos.user;
+package com.api.authapi.domain.dtos.auth;
 
+import com.api.authapi.domain.dtos.user.UserResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

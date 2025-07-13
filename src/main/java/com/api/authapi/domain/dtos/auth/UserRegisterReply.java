@@ -1,4 +1,4 @@
-package com.api.authapi.domain.dtos.user;
+package com.api.authapi.domain.dtos.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +14,6 @@ import java.util.UUID;
 @Builder
 public class UserRegisterReply implements Serializable {
         private UUID sagaId;
-        private Long userId;
         private boolean success;
         private String token;
         private String refreshToken;

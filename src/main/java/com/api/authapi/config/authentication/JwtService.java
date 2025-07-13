@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -29,33 +28,21 @@ public class JwtService {
         return extractClaims(token, Claims::getSubject);
     }
 
-    public Long extractUserId(String token) {
-        return extractClaims(token, claims -> claims.get("id", Long.class));
-    }
-
-    public List<String> extractUserRole(String token) {
-        return extractClaims(token, claims -> claims.get("role", List.class));
-    }
-
     public String generateToken(User user) {
-        Map<String, Object> extraClaims = new HashMap<>();
-        extraClaims.put("id", user.getId());
-        extraClaims.put("role", user.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .toList());
-        return buildToken(extraClaims, user, jwtProperties.getExpiration().getAccessTokenMs());
+        return buildToken(user, jwtProperties.getExpiration().getAccessTokenMs());
     }
 
     public String generateRefreshToken(User user) {
+        return buildToken(user, jwtProperties.getExpiration().getRefreshTokenMs());
+    }
+
+    private String buildToken(User user, long expiration) {
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("id", user.getId());
         extraClaims.put("role", user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList());
-        return buildToken(extraClaims, user, jwtProperties.getExpiration().getRefreshTokenMs());
-    }
 
-    private String buildToken(Map<String, Object> extraClaims, User user, long expiration) {
         return Jwts.builder()
                 .serializeToJsonWith(new JacksonSerializer<>())
                 .claims(extraClaims)
@@ -71,17 +58,13 @@ public class JwtService {
     }
 
     private <T> T extractClaims(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractClaims(token);
-        return claimsResolver.apply(claims);
-    }
-
-    private Claims extractClaims(String token) {
-        return Jwts.parser()
+        Claims claims = Jwts.parser()
                 .verifyWith(getSigningKey())
                 .json(new JacksonDeserializer<>())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+        return claimsResolver.apply(claims);
     }
 
     private SecretKey getSigningKey() {

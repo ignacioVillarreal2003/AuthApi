@@ -1,6 +1,5 @@
 package com.api.authapi.integration;
 
-import com.api.authapi.domain.enums.Role;
 import com.api.authapi.domain.models.User;
 import com.api.authapi.infraestructure.persistence.repositories.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
