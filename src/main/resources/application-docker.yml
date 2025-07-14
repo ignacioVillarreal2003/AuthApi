@@ -48,6 +48,7 @@ jwt:
 cors:
   allowed-origins:
     - http://rescuemeapp:4200/
+    - http://rescue_me_app:4200/
 
 rabbit:
   exchange:

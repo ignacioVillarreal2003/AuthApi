@@ -4,7 +4,7 @@ import com.api.authapi.api.producers.UserRegisterSagaPublisher;
 import com.api.authapi.application.services.AuthService;
 import com.api.authapi.application.services.UserRegisterSagaService;
 import com.api.authapi.application.services.UserService;
-import com.api.authapi.domain.constants.SagaStep;
+import com.api.authapi.domain.constants.RegisterSagaStep;
 import com.api.authapi.domain.dtos.auth.AuthResponse;
 import com.api.authapi.domain.dtos.auth.CompensateUserRegisterCommand;
 import com.api.authapi.domain.dtos.auth.UserRegisterCommand;
@@ -37,7 +37,7 @@ public class UserRegisterSagaConsumer {
 
         registerSagaService.startSaga(sagaId);
 
-        if (registerSagaService.isStepCompleted(sagaId, SagaStep.USER_CREATED)) {
+        if (registerSagaService.isStepCompleted(sagaId, RegisterSagaStep.USER_CREATED)) {
             return;
         }
 
@@ -50,6 +50,7 @@ public class UserRegisterSagaConsumer {
                     UserRegisterReply.builder()
                         .sagaId(sagaId)
                         .success(true)
+                        .email(authResponse.getUser().getEmail())
                         .token(authResponse.getToken())
                         .refreshToken(authResponse.getRefreshToken())
                         .build()

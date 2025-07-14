@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({UserNotFoundException.class,
             RoleNotFoundException.class})
-    public ResponseEntity<Object> handleNotFound(UserNotFoundException ex, HttpServletRequest req) {
+    public ResponseEntity<Object> handleNotFound(RuntimeException ex, HttpServletRequest req) {
         return buildError(HttpStatus.NOT_FOUND, ex.getMessage(), req.getRequestURI());
     }
 

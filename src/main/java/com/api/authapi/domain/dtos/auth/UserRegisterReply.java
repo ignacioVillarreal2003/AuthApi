@@ -15,6 +15,7 @@ import java.util.UUID;
 public class UserRegisterReply implements Serializable {
         private UUID sagaId;
         private boolean success;
+        private String email;
         private String token;
         private String refreshToken;
         private String errorMessage;

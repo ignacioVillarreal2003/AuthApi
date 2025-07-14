@@ -1,6 +1,6 @@
 package com.api.authapi.application.services;
 
-import com.api.authapi.domain.constants.SagaStep;
+import com.api.authapi.domain.constants.RegisterSagaStep;
 import com.api.authapi.domain.models.UserRegisterSaga;
 import com.api.authapi.infraestructure.persistence.repositories.UserRegisterSagaRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +24,12 @@ public class UserRegisterSagaService {
     public void markUserCreated(UUID sagaId, Long userId) {
         registerSagaRepository.findById(sagaId).ifPresent(s -> {
             s.setUserId(userId);
-            s.markStep(SagaStep.USER_CREATED);
+            s.markStep(RegisterSagaStep.USER_CREATED);
             registerSagaRepository.save(s);
         });
     }
 
-    public boolean isStepCompleted(UUID sagaId, SagaStep step) {
+    public boolean isStepCompleted(UUID sagaId, RegisterSagaStep step) {
         return registerSagaRepository.findById(sagaId)
                 .map(s -> s.getStep().ordinal() >= step.ordinal())
                 .orElse(false);
@@ -41,14 +41,14 @@ public class UserRegisterSagaService {
 
     public void completeSaga(UUID sagaId) {
         registerSagaRepository.findById(sagaId).ifPresent(s -> {
-            s.markStep(SagaStep.COMPLETED);
+            s.markStep(RegisterSagaStep.COMPLETED);
             registerSagaRepository.save(s);
         });
     }
 
     public void compensateSaga(UUID sagaId) {
         registerSagaRepository.findById(sagaId).ifPresent(s -> {
-            s.markStep(SagaStep.COMPENSATED);
+            s.markStep(RegisterSagaStep.COMPENSATED);
             registerSagaRepository.save(s);
         });
     }

@@ -8,8 +8,10 @@ import java.util.List;
 import java.util.UUID;
 
 public record UserRegisterCommand(
+        @NotNull(message = "Saga id is required")
         UUID sagaId,
 
+        @NotNull(message = "Email is required")
         @Email(message = "Email is invalid")
         @Size(max = 64, message = "Email must be less than 64 characters")
         String email,
