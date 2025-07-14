@@ -24,6 +24,7 @@ public class Role extends Auditable<String> {
     @Column(unique = true, nullable = false)
     private String name;
 
-    @OneToMany(mappedBy = "role",  cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @OneToMany(mappedBy = "role",  cascade = CascadeType.ALL, orphanRemoval = true,  fetch = FetchType.LAZY)
     private Set<UserRole> users = new HashSet<>();
 }

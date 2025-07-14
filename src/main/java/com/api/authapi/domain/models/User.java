@@ -31,19 +31,24 @@ public class User extends Auditable<String> implements UserDetails {
 
     private String refreshToken;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean accountNonExpired = true;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean accountNonLocked = true;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean credentialsNonExpired = true;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean enabled = true;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<UserRole> roles = new HashSet<>();
 
     @Override

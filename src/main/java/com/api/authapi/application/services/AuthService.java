@@ -67,10 +67,9 @@ public class AuthService {
 
     private User createUser(UserRegisterCommand request) {
         User user = userRepository.save(
-                User.builder().email(request.email())
+                User.builder()
+                        .email(request.email())
                         .password(passwordEncoder.encode(request.password()))
-                        .refreshToken(null)
-                        .roles(new HashSet<>())
                         .build()
         );
 

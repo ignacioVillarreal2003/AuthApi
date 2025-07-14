@@ -1,17 +1,14 @@
 package com.api.authapi.application.helpers;
 
 import com.api.authapi.application.exceptions.*;
+import com.api.authapi.application.exceptions.AccountExpiredException;
 import com.api.authapi.config.authentication.AuthenticationUserProvider;
 import com.api.authapi.domain.models.User;
 import com.api.authapi.infraestructure.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.*;
-import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
@@ -40,17 +37,16 @@ public class UserHelperService {
     }
 
     public void verifyAccountStatus(User user) {
-        PreAuthenticatedAuthenticationToken token =
-                new PreAuthenticatedAuthenticationToken(user, null, user.getAuthorities());
-        try {
-            authenticationManager.authenticate(token);
-        } catch (LockedException ex) {
-            throw new AccountLockedException();
-        } catch (DisabledException ex) {
+        if (!user.isEnabled()) {
             throw new AccountDisabledException();
-        } catch (AccountExpiredException ex) {
-            throw new com.api.authapi.application.exceptions.AccountExpiredException();
-        } catch (CredentialsExpiredException ex) {
+        }
+        if (!user.isAccountNonLocked()) {
+            throw new AccountLockedException();
+        }
+        if (!user.isAccountNonExpired()) {
+            throw new AccountExpiredException();
+        }
+        if (!user.isCredentialsNonExpired()) {
             throw new AccountCredentialsExpiredException();
         }
     }

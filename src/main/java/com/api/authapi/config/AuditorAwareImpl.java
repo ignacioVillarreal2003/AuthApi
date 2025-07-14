@@ -1,6 +1,7 @@
 package com.api.authapi.config;
 
 import com.api.authapi.config.authentication.AuthenticationUserProvider;
+import com.api.authapi.domain.models.User;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.AuditorAware;
@@ -16,10 +17,11 @@ public class AuditorAwareImpl implements AuditorAware<String> {
 
     @Override
     public @NotNull Optional<String> getCurrentAuditor() {
-        String username = authenticationUserProvider.getUser().getUsername();
-        if (username != null) {
+        User user = authenticationUserProvider.getUser();
+        if (user != null) {
+            String username = user.getUsername();
             return Optional.of(username);
         }
-        return Optional.empty();
+        return Optional.of("system");
     }
 }

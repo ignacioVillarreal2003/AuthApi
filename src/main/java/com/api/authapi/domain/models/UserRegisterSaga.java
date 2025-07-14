@@ -1,9 +1,8 @@
 package com.api.authapi.domain.models;
 
 import com.api.authapi.domain.constants.SagaStep;
-import jakarta.persistence.Column;
-import jakarta.persistence.Id;
 import lombok.*;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
@@ -24,7 +23,6 @@ public class UserRegisterSaga {
 
     private SagaStep step;
 
-    @Column(updatable = false)
     private Instant createdAt;
 
     private Instant updatedAt;
