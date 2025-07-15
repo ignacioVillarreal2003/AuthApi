@@ -1,7 +1,7 @@
 package com.api.authapi.api.controllers;
 
 import com.api.authapi.application.services.UserService;
-import com.api.authapi.domain.dtos.user.*;
+import com.api.authapi.domain.dto.user.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

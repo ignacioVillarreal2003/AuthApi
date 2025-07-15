@@ -1,7 +1,5 @@
 package com.api.authapi.integration;
 
-import com.api.authapi.domain.models.User;
-import com.api.authapi.infraestructure.persistence.repositories.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

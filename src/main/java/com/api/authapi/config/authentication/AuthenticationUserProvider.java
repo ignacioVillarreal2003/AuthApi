@@ -1,6 +1,6 @@
 package com.api.authapi.config.authentication;
 
-import com.api.authapi.domain.models.User;
+import com.api.authapi.domain.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;

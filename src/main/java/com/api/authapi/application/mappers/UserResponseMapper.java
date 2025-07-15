@@ -1,7 +1,7 @@
 package com.api.authapi.application.mappers;
 
-import com.api.authapi.domain.dtos.user.UserResponse;
-import com.api.authapi.domain.models.User;
+import com.api.authapi.domain.dto.user.UserResponse;
+import com.api.authapi.domain.model.User;
 import org.springframework.stereotype.Service;
 
 import java.util.function.Function;

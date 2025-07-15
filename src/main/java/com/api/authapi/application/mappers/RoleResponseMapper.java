@@ -1,7 +1,7 @@
 package com.api.authapi.application.mappers;
 
-import com.api.authapi.domain.dtos.role.RoleResponse;
-import com.api.authapi.domain.models.Role;
+import com.api.authapi.domain.dto.role.RoleResponse;
+import com.api.authapi.domain.model.Role;
 import org.springframework.stereotype.Service;
 
 import java.util.function.Function;

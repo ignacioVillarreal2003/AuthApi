@@ -1,0 +1,30 @@
+package com.api.authapi.domain.model;
+
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.envers.Audited;
+
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Table(name = "role")
+@Audited
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Role extends Auditable<String> {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(unique = true, nullable = false)
+    private String name;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "role",  cascade = CascadeType.ALL, orphanRemoval = true,  fetch = FetchType.LAZY)
+    private Set<UserRole> users = new HashSet<>();
+}

@@ -1,7 +1,7 @@
 package com.api.authapi.application.mappers;
 
-import com.api.authapi.domain.dtos.userRole.UserRoleResponse;
-import com.api.authapi.domain.models.UserRole;
+import com.api.authapi.domain.dto.userRole.UserRoleResponse;
+import com.api.authapi.domain.model.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

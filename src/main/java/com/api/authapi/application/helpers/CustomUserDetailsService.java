@@ -1,7 +1,7 @@
 package com.api.authapi.application.helpers;
 
 import com.api.authapi.application.exceptions.UserNotFoundException;
-import com.api.authapi.infraestructure.persistence.repositories.UserRepository;
+import com.api.authapi.infrastructure.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

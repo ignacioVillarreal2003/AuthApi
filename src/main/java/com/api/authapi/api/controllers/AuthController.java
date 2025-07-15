@@ -1,9 +1,9 @@
 package com.api.authapi.api.controllers;
 
 import com.api.authapi.application.services.AuthService;
-import com.api.authapi.domain.dtos.auth.AuthResponse;
-import com.api.authapi.domain.dtos.auth.LoginUserRequest;
-import com.api.authapi.domain.dtos.auth.RefreshTokenRequest;
+import com.api.authapi.domain.dto.auth.AuthResponse;
+import com.api.authapi.domain.dto.auth.LoginUserRequest;
+import com.api.authapi.domain.dto.auth.RefreshTokenRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

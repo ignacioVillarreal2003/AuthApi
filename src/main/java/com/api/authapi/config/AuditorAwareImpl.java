@@ -1,7 +1,7 @@
 package com.api.authapi.config;
 
 import com.api.authapi.config.authentication.AuthenticationUserProvider;
-import com.api.authapi.domain.models.User;
+import com.api.authapi.domain.model.User;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.AuditorAware;

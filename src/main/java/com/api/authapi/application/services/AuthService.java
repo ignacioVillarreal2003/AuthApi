@@ -5,12 +5,12 @@ import com.api.authapi.application.exceptions.InvalidRefreshTokenException;
 import com.api.authapi.application.helpers.UserHelperService;
 import com.api.authapi.application.mappers.UserResponseMapper;
 import com.api.authapi.config.authentication.JwtService;
-import com.api.authapi.domain.dtos.auth.AuthResponse;
-import com.api.authapi.domain.dtos.auth.LoginUserRequest;
-import com.api.authapi.domain.dtos.auth.RefreshTokenRequest;
-import com.api.authapi.domain.dtos.auth.UserRegisterCommand;
-import com.api.authapi.domain.models.User;
-import com.api.authapi.infraestructure.persistence.repositories.UserRepository;
+import com.api.authapi.domain.dto.auth.AuthResponse;
+import com.api.authapi.domain.dto.auth.LoginUserRequest;
+import com.api.authapi.domain.dto.auth.RefreshTokenRequest;
+import com.api.authapi.domain.saga.command.UserRegisterInitialCommand;
+import com.api.authapi.domain.model.User;
+import com.api.authapi.infrastructure.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,7 +32,7 @@ public class AuthService {
     private final UserRoleService userRoleService;
 
     @Transactional
-    public AuthResponse register(UserRegisterCommand request) {
+    public AuthResponse register(UserRegisterInitialCommand request) {
         Optional<User> existing = userRepository.findByEmail(request.email());
 
         if (existing.isPresent()) {
@@ -48,7 +48,7 @@ public class AuthService {
         return buildAuthResponse(newUser);
     }
 
-    private void registerUserInNewApp(User user, UserRegisterCommand request) {
+    private void registerUserInNewApp(User user, UserRegisterInitialCommand request) {
         userHelperService.verifyAccountStatus(user);
 
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
@@ -65,7 +65,7 @@ public class AuthService {
         });
     }
 
-    private User createUser(UserRegisterCommand request) {
+    private User createUser(UserRegisterInitialCommand request) {
         User user = userRepository.save(
                 User.builder()
                         .email(request.email())

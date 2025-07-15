@@ -1,6 +1,5 @@
 package com.api.authapi.unit.services;
 
-import com.api.authapi.domain.enums.Role;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 

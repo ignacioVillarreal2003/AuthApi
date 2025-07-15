@@ -1,8 +1,8 @@
 package com.api.authapi.application.services;
 
 import com.api.authapi.application.exceptions.RoleNotFoundException;
-import com.api.authapi.domain.models.Role;
-import com.api.authapi.infraestructure.persistence.repositories.RoleRepository;
+import com.api.authapi.domain.model.Role;
+import com.api.authapi.infrastructure.persistence.repositories.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -3,16 +3,17 @@ package com.api.authapi.config;
 import com.api.authapi.config.properties.RabbitProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.core.*;
-import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.retry.annotation.EnableRetry;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableRetry
 public class RabbitConfig {
 
     private final RabbitProperties rabbitProperties;
@@ -23,63 +24,68 @@ public class RabbitConfig {
     }
 
     @Bean
-    public DirectExchange authDlx() {
-        return new DirectExchange(rabbitProperties.getExchange().getAuth() + ".dlx", true, false);
+    public Queue userRegisterInitialCommandQueue() {
+        return QueueBuilder.durable(rabbitProperties.getQueue().getUserRegisterInitialCommand()).build();
     }
 
     @Bean
-    public Queue userRegisterCommandQueue() {
-        return QueueBuilder.durable(rabbitProperties.getQueue().getUserRegisterCommand())
-                .withArgument("x-dead-letter-exchange", rabbitProperties.getExchange().getAuth() + ".dlx")
-                .withArgument("x-dead-letter-routing-key", rabbitProperties.getRoutingKey().getUserRegisterCommand() + ".dlq")
-                .build();
+    public Queue userRegisterSuccessReplyQueue() {
+        return QueueBuilder.durable(rabbitProperties.getQueue().getUserRegisterSuccessReply()).build();
     }
 
     @Bean
-    public Queue userRegisterCommandDlq() {
-        return QueueBuilder.durable(rabbitProperties.getQueue().getUserRegisterCommand() + ".dlq").build();
+    public Queue userRegisterFailureReplyQueue() {
+        return QueueBuilder.durable(rabbitProperties.getQueue().getUserRegisterFailureReply()).build();
     }
 
     @Bean
-    public Queue userRegisterReplyQueue() {
-        return QueueBuilder.durable(rabbitProperties.getQueue().getUserRegisterReply()).build();
+    public Queue userRegisterCompensationCommandQueue() {
+        return QueueBuilder.durable(rabbitProperties.getQueue().getUserRegisterCompensationCommand()).build();
     }
 
     @Bean
-    public Queue compensateUserRegisterCommandQueue() {
-        return QueueBuilder.durable(rabbitProperties.getQueue().getCompensateUserRegisterCommand()).build();
+    public Queue userRegisterConfirmationCommandQueue() {
+        return QueueBuilder.durable(rabbitProperties.getQueue().getUserRegisterConfirmationCommand()).build();
     }
 
     @Bean
-    public Binding bindingUserRegisterCommand() {
+    public Binding bindingUserRegisterInitialCommand() {
         return BindingBuilder
-                .bind(userRegisterCommandQueue())
+                .bind(userRegisterInitialCommandQueue())
                 .to(authExchange())
-                .with(rabbitProperties.getRoutingKey().getUserRegisterCommand());
+                .with(rabbitProperties.getRoutingKey().getUserRegisterInitialCommand());
     }
 
     @Bean
-    public Binding bindingUserRegisterDlq() {
+    public Binding bindingUserRegisterSuccessReply() {
         return BindingBuilder
-                .bind(userRegisterCommandDlq())
-                .to(authDlx())
-                .with(rabbitProperties.getRoutingKey().getUserRegisterCommand() + ".dlq");
-    }
-
-    @Bean
-    public Binding bindingUserRegisterReply() {
-        return BindingBuilder
-                .bind(userRegisterReplyQueue())
+                .bind(userRegisterSuccessReplyQueue())
                 .to(authExchange())
-                .with(rabbitProperties.getRoutingKey().getUserRegisterReply());
+                .with(rabbitProperties.getRoutingKey().getUserRegisterSuccessReply());
     }
 
     @Bean
-    public Binding bindingCompensateUserRegisterCommand() {
+    public Binding bindingUserRegisterFailureReply() {
         return BindingBuilder
-                .bind(compensateUserRegisterCommandQueue())
+                .bind(userRegisterFailureReplyQueue())
                 .to(authExchange())
-                .with(rabbitProperties.getRoutingKey().getCompensateUserRegisterCommand());
+                .with(rabbitProperties.getRoutingKey().getUserRegisterFailureReply());
+    }
+
+    @Bean
+    public Binding bindingUserRegisterCompensationCommand() {
+        return BindingBuilder
+                .bind(userRegisterCompensationCommandQueue())
+                .to(authExchange())
+                .with(rabbitProperties.getRoutingKey().getUserRegisterCompensationCommand());
+    }
+
+    @Bean
+    public Binding bindingUserRegisterConfirmationCommand() {
+        return BindingBuilder
+                .bind(userRegisterConfirmationCommandQueue())
+                .to(authExchange())
+                .with(rabbitProperties.getRoutingKey().getUserRegisterConfirmationCommand());
     }
 
     @Bean
@@ -92,19 +98,5 @@ public class RabbitConfig {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(converter());
         return rabbitTemplate;
-    }
-
-    @Bean
-    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
-            ConnectionFactory connectionFactory,
-            MessageConverter messageConverter) {
-        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-        factory.setConnectionFactory(connectionFactory);
-        factory.setMessageConverter(messageConverter);
-
-        factory.setReceiveTimeout(30_000L);
-        factory.setDefaultRequeueRejected(false);
-
-        return factory;
     }
 }

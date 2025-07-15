@@ -1,10 +1,10 @@
 package com.api.authapi.application.services;
 
 import com.api.authapi.application.exceptions.RoleAlreadyAssignedException;
-import com.api.authapi.domain.models.Role;
-import com.api.authapi.domain.models.User;
-import com.api.authapi.domain.models.UserRole;
-import com.api.authapi.infraestructure.persistence.repositories.UserRoleRepository;
+import com.api.authapi.domain.model.Role;
+import com.api.authapi.domain.model.User;
+import com.api.authapi.domain.model.UserRole;
+import com.api.authapi.infrastructure.persistence.repositories.UserRoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

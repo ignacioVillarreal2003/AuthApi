@@ -23,16 +23,20 @@ public class RabbitProperties {
     @Getter
     @Setter
     public static class Queue {
-        private String userRegisterCommand;
-        private String userRegisterReply;
-        private String compensateUserRegisterCommand;
+        private String userRegisterInitialCommand;
+        private String userRegisterCompensationCommand;
+        private String userRegisterConfirmationCommand;
+        private String userRegisterSuccessReply;
+        private String userRegisterFailureReply;
     }
 
     @Getter
     @Setter
     public static class RoutingKey {
-        private String userRegisterCommand;
-        private String userRegisterReply;
-        private String compensateUserRegisterCommand;
+        private String userRegisterInitialCommand;
+        private String userRegisterCompensationCommand;
+        private String userRegisterConfirmationCommand;
+        private String userRegisterSuccessReply;
+        private String userRegisterFailureReply;
     }
 }

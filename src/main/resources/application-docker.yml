@@ -5,7 +5,7 @@ spring:
     password: 12345678
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
@@ -54,13 +54,17 @@ rabbit:
   exchange:
     auth: authApi.exchange
   queue:
-    user-register-command: authApi.userRegisterCommand.queue
-    user-register-reply: authApi.userRegisterReply.queue
-    compensate-user-register-command: authApi.userRegisterCompensateCommand.queue
+    user-register-initial-command: authApi.userRegisterInitialCommand.queue
+    user-register-compensation-command: authApi.userRegisterCompensationCommand.queue
+    user-register-confirmation-command: authApi.userRegisterConfirmationCommand.queue
+    user-register-success-reply: authApi.userRegisterSuccessReply.queue
+    user-register-failure-reply: authApi.userRegisterFailureReply.queue
   routing-key:
-    user-register-command: authApi.userRegisterCommand.routingKey
-    user-register-reply: authApi.userRegisterReply.routingKey
-    compensate-user-register-command: authApi.userRegisterCompensateCommand.routingKey
+    user-register-initial-command: authApi.userRegisterInitialCommand.routingKey
+    user-register-compensation-command: authApi.userRegisterCompensationCommand.routingKey
+    user-register-confirmation-command: authApi.userRegisterConfirmationCommand.routingKey
+    user-register-success-reply: authApi.userRegisterSuccessReply.routingKey
+    user-register-failure-reply: authApi.userRegisterFailureReply.routingKey
 
 logging:
   level:
