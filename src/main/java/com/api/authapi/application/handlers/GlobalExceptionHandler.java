@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, ex.getStatusCode());
     }
 
-    @ExceptionHandler({InvalidCredentialsException.class, InvalidRefreshTokenException.class})
+    @ExceptionHandler({InvalidCredentialsException.class, InvalidRefreshTokenException.class, InvalidRoleException.class})
     public ResponseEntity<Object> handleUnauthorized(RuntimeException ex, HttpServletRequest req) {
         log.warn("[GlobalExceptionHandler::handleUnauthorized] Unauthorized - URI: {} - {}", req.getRequestURI(), ex.getMessage());
         return buildError(HttpStatus.UNAUTHORIZED, ex.getMessage(), req.getRequestURI());

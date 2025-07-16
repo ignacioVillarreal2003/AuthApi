@@ -81,6 +81,10 @@ public class UserRegistrationSagaOrchestrator {
         UUID sagaId = cmd.sagaId();
         log.info("[UserRegistrationSagaOrchestrator::handleUserRegisterCompensationCommand] Compensating saga. sagaId={}", sagaId);
         UserRegistrationSagaState state = sagaStateService.getUserRegistrationSagaState(sagaId);
+        if (state.getStep().equals(UserRegistrationSagaStep.COMPLETED)) {
+            log.debug("[UserRegistrationSagaOrchestrator::handleUserRegisterCompensationCommand] Saga is completed, cannot be compensated. sagaId={}", sagaId);
+            return;
+        }
         userService.deleteUserById(state.getUserId());
         sagaStateService.compensateSaga(sagaId);
     }
@@ -88,6 +92,11 @@ public class UserRegistrationSagaOrchestrator {
     public void handleUserRegisterConfirmationCommand(@Valid UserRegisterConfirmationCommand cmd) {
         UUID sagaId = cmd.sagaId();
         log.info("[UserRegistrationSagaOrchestrator::handleUserRegisterConfirmationCommand] Confirming saga. sagaId={}", sagaId);
+        UserRegistrationSagaState state = sagaStateService.getUserRegistrationSagaState(sagaId);
+        if (state.getStep().equals(UserRegistrationSagaStep.COMPENSATED)) {
+            log.debug("[UserRegistrationSagaOrchestrator::handleUserRegisterConfirmationCommand] Saga is compensated, cannot be completed. sagaId={}", sagaId);
+            return;
+        }
         sagaStateService.completeSaga(sagaId);
     }
 }
