@@ -33,16 +33,16 @@ public class AuthService {
 
     @Transactional
     public AuthResponse register(UserRegisterInitialCommand request) {
-        log.debug("[AuthService::register] Register request received. Payload: {}", request);
+        log.info("[AuthService::register] Register request received. Payload: {}", request);
         Optional<User> existing = userRepository.findByEmail(request.email());
         if (existing.isPresent()) {
             User user = existing.get();
-            log.debug("[AuthService::register] User already exists with email: {}. Linking roles.", request.email());
+            log.info("[AuthService::register] User already exists with email: {}. Linking roles.", request.email());
             registerUserInNewApp(user, request);
             return buildAuthResponse(user);
         }
         User user = createUser(request);
-        log.debug("[AuthService::register] New user created: {}", user);
+        log.info("[AuthService::register] New user created: {}", user);
         return buildAuthResponse(user);
     }
 
@@ -50,27 +50,27 @@ public class AuthService {
         log.debug("[AuthService::registerUserInNewApp] Linking user {} to new roles", user.getEmail());
         userHelperService.verifyAccountStatus(user);
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
-            log.debug("[AuthService::registerUserInNewApp] Password mismatch for user {}", user.getEmail());
+            log.warn("[AuthService::registerUserInNewApp] Password mismatch for user {}", user.getEmail());
             throw new InvalidCredentialsException();
         }
         request.roles().stream()
                 .filter(r -> user.getRoles().stream()
                         .noneMatch(ur -> ur.getRole().getName().equals(r)))
                 .forEach(role -> {
-                    log.debug("[AuthService::registerUserInNewApp] Assigning new role '{}' to user {}", role, user.getEmail());
+                    log.info("[AuthService::registerUserInNewApp] Assigning new role '{}' to user {}", role, user.getEmail());
                     userRoleService.assignRoleToUser(user, role);
                 });
     }
 
     private User createUser(UserRegisterInitialCommand request) {
-        log.debug("[AuthService::createUser] Creating new user with email: {}", request.email());
+        log.info("[AuthService::createUser] Creating new user with email: {}", request.email());
         User user = userRepository.save(
                 User.builder()
                         .email(request.email())
                         .password(passwordEncoder.encode(request.password()))
                         .build());
         request.roles().forEach(role -> {
-            log.debug("[AuthService::createUser] Assigning role '{}' to user {}", role, user.getEmail());
+            log.info("[AuthService::createUser] Assigning role '{}' to user {}", role, user.getEmail());
             userRoleService.assignRoleToUser(user, role);
         });
         return user;
@@ -78,29 +78,29 @@ public class AuthService {
 
     @Transactional
     public AuthResponse login(LoginUserRequest request) {
-        log.debug("[AuthService::login] Login request received. Payload: {}", request);
+        log.info("[AuthService::login] Login request received. Payload: {}", request);
         User user = userHelperService.authenticateUser(request.email(), request.password());
-        log.debug("[AuthService::login] User authenticated successfully. userId={}, email={} ", user.getId(), user.getEmail());
+        log.info("[AuthService::login] User authenticated successfully. userId={}, email={} ", user.getId(), user.getEmail());
         return buildAuthResponse(user);
     }
 
     @Transactional
     public void logout() {
-        log.debug("[AuthService::logout] Logout requested");
+        log.info("[AuthService::logout] Logout requested");
         User user = userHelperService.getCurrentUser();
         userHelperService.verifyAccountStatus(user);
         user.setRefreshToken(null);
         userRepository.save(user);
-        log.debug("[AuthService::logout] Refresh token cleared for userId={}", user.getId());
+        log.info("[AuthService::logout] Refresh token cleared for userId={}", user.getId());
     }
 
     @Transactional
     public AuthResponse refresh(RefreshTokenRequest request) {
-        log.debug("[AuthService::refresh] Refresh token request received. Payload: {}", request);
+        log.info("[AuthService::refresh] Refresh token request received. Payload: {}", request);
         User user = userHelperService.getCurrentUser();
         userHelperService.verifyAccountStatus(user);
         if (!Objects.equals(user.getRefreshToken(), request.refreshToken())) {
-            log.debug("[AuthService::refresh] Invalid refresh token for userId={}", user.getId());
+            log.warn("[AuthService::refresh] Invalid refresh token for userId={}", user.getId());
             throw new InvalidRefreshTokenException();
         }
         return buildAuthResponse(user);
@@ -112,7 +112,7 @@ public class AuthService {
         String refreshToken = jwtService.generateRefreshToken(user);
         user.setRefreshToken(refreshToken);
         userRepository.save(user);
-        log.debug("[AuthService::buildAuthResponse] Tokens generated and saved for userId={}", user.getId());
+        log.info("[AuthService::buildAuthResponse] Tokens generated and saved for userId={}", user.getId());
         return AuthResponse.builder()
                 .token(token)
                 .refreshToken(refreshToken)

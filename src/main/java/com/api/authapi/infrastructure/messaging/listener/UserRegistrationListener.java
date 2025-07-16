@@ -6,6 +6,7 @@ import com.api.authapi.domain.saga.command.UserRegisterConfirmationCommand;
 import com.api.authapi.domain.saga.command.UserRegisterInitialCommand;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.retry.annotation.Backoff;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class UserRegistrationListener {
 
     private final UserRegistrationSagaOrchestrator orchestrator;
@@ -25,7 +27,9 @@ public class UserRegistrationListener {
     )
     @RabbitListener(queues = "${rabbit.queue.user-register-initial-command}")
     public void handleUserRegisterInitialCommand(@Valid @Payload UserRegisterInitialCommand cmd) {
+        log.info("[UserRegistrationListener::handleUserRegisterInitialCommand] Received command sagaId={}", cmd.sagaId());
         orchestrator.handleUserRegisterInitialCommand(cmd);
+        log.info("[UserRegistrationListener::handleUserRegisterInitialCommand] Processing finished sagaId={}", cmd.sagaId());
     }
 
     @Retryable(
@@ -35,7 +39,10 @@ public class UserRegistrationListener {
     )
     @RabbitListener(queues = "${rabbit.queue.user-register-compensation-command}")
     public void handleUserRegisterCompensationCommand(@Valid @Payload UserRegisterCompensationCommand cmd) {
+        log.info("[UserRegistrationListener::handleUserRegisterCompensationCommand] Received command sagaId={}", cmd.sagaId());
         orchestrator.handleUserRegisterCompensationCommand(cmd);
+        log.info("[UserRegistrationListener::handleUserRegisterCompensationCommand] Processing finished sagaId={}", cmd.sagaId());
+
     }
 
     @Retryable(
@@ -45,6 +52,8 @@ public class UserRegistrationListener {
     )
     @RabbitListener(queues = "${rabbit.queue.user-register-confirmation-command}")
     public void handleUserRegisterConfirmationCommand(@Valid @Payload UserRegisterConfirmationCommand cmd) {
+        log.info("[UserRegistrationListener::handleUserRegisterConfirmationCommand] Received command sagaId={}", cmd.sagaId());
         orchestrator.handleUserRegisterConfirmationCommand(cmd);
+        log.info("[UserRegistrationListener::handleUserRegisterConfirmationCommand] Processing finished sagaId={}", cmd.sagaId());
     }
 }

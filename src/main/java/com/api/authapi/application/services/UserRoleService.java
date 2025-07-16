@@ -20,10 +20,10 @@ public class UserRoleService {
 
     @Transactional
     public void assignRoleToUser(User user, String roleName) {
-        log.debug("[UserRoleService::assignRoleToUser] Assigning role '{}' to userId={}", roleName, user.getId());
+        log.info("[UserRoleService::assignRoleToUser] Assigning role '{}' to userId={}", roleName, user.getId());
         Role role = roleService.getRoleByName(roleName);
         if (userRoleRepository.existsByUserAndRole(user, role)) {
-            log.debug("[UserRoleService::assignRoleToUser] Role '{}' already assigned to userId={}", roleName, user.getId());
+            log.warn("[UserRoleService::assignRoleToUser] Role '{}' already assigned to userId={}", roleName, user.getId());
             throw new RoleAlreadyAssignedException();
         }
         UserRole userRole = UserRole.builder()
@@ -32,6 +32,6 @@ public class UserRoleService {
                 .build();
         user.getRoles().add(userRole);
         userRoleRepository.save(userRole);
-        log.debug("[UserRoleService::assignRoleToUser] Role '{}' successfully assigned to userId={}", roleName, user.getId());
+        log.info("[UserRoleService::assignRoleToUser] Role '{}' successfully assigned to userId={}", roleName, user.getId());
     }
 }

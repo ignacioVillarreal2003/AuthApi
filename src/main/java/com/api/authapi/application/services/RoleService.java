@@ -15,10 +15,10 @@ public class RoleService {
     private final RoleRepository roleRepository;
 
     public Role getRoleByName(String roleName) {
-        log.debug("[RoleService::getRoleByName] Fetching role with name: {}", roleName);
+        log.info("[RoleService::getRoleByName] Fetching role with name: {}", roleName);
         return roleRepository.findByName(roleName)
                 .orElseThrow(() -> {
-                    log.debug("[RoleService::getRoleByName] Role not found: {}", roleName);
+                    log.warn("[RoleService::getRoleByName] Role not found: {}", roleName);
                     return new RoleNotFoundException();
                 });
     }

@@ -1,16 +1,19 @@
 package com.api.authapi.application.saga.helpers;
 
 import com.api.authapi.application.exceptions.InvalidCredentialsException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.stream.Collectors;
 
+@Slf4j
 public class SagaErrorMapper {
 
     public record SagaError(Integer code, String message) {}
 
     public static SagaError map(Throwable ex) {
+        log.warn("[SagaErrorMapper::map] Mapping exception: {}", ex.toString());
         if (ex instanceof InvalidCredentialsException) {
             return new SagaError(401, ex.getMessage());
         }
