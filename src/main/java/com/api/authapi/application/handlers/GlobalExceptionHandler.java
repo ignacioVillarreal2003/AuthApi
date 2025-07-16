@@ -4,7 +4,6 @@ import com.api.authapi.application.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AccountExpiredException;
 import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.LockedException;
@@ -70,8 +69,8 @@ public class GlobalExceptionHandler {
         return buildError(HttpStatus.LOCKED, ex.getMessage(), req.getRequestURI());
     }
 
-    @ExceptionHandler(AccountExpiredException.class)
-    public ResponseEntity<Object> handleAccountExpired(AccountExpiredException ex, HttpServletRequest req) {
+    @ExceptionHandler(CustomAccountExpiredException.class)
+    public ResponseEntity<Object> handleAccountExpired(CustomAccountExpiredException ex, HttpServletRequest req) {
         return buildError(HttpStatus.FORBIDDEN, ex.getMessage(), req.getRequestURI());
     }
 
@@ -83,6 +82,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UserIsAdministratorException.class)
     public ResponseEntity<Object> handleUserIsAdministrator(UserIsAdministratorException ex, HttpServletRequest req) {
         return buildError(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI());
+    }
+
+    @ExceptionHandler(RoleAlreadyAssignedException.class)
+    public ResponseEntity<Object> handleRoleAlreadyAssigned(RoleAlreadyAssignedException ex, HttpServletRequest req) {
+        return buildError(HttpStatus.CONFLICT, ex.getMessage(), req.getRequestURI());
+    }
+
+    @ExceptionHandler(CustomAuthenticationException.class)
+    public ResponseEntity<Object> handleCustomAuthentication(CustomAuthenticationException ex, HttpServletRequest req) {
+        return buildError(HttpStatus.BAD_REQUEST, ex.getMessage(), req.getRequestURI());
     }
 
     private ResponseEntity<Object> buildError(HttpStatus status, String message, String path) {

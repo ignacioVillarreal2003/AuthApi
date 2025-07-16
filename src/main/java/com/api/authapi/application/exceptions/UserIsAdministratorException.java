@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class UserIsAdministratorException extends RuntimeException {
 
     public UserIsAdministratorException() {
-        super("User is an administrator.");
+        super("User is an administrator. Cannot do this action.");
     }
 }

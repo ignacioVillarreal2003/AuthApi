@@ -62,6 +62,5 @@ rabbit:
 
 logging:
   level:
-    org:
-      springframework:
-        security: DEBUG
+    com.api: DEBUG
+    org.springframework.security: DEBUG

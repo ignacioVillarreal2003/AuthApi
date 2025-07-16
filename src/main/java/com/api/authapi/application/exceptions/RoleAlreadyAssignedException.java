@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class RoleAlreadyAssignedException extends RuntimeException {
 
     public RoleAlreadyAssignedException() {
-        super("Role already assigned to user");
+        super("Role is already assigned to user");
     }
 }

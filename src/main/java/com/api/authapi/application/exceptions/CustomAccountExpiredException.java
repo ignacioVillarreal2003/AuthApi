@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.UNAUTHORIZED)
-public class AccountExpiredException extends RuntimeException {
+public class CustomAccountExpiredException extends RuntimeException {
 
-    public AccountExpiredException() {
+    public CustomAccountExpiredException() {
         super("Account expired");
     }
 }

@@ -1,15 +1,18 @@
 package com.api.authapi.application.helpers;
 
 import com.api.authapi.application.exceptions.*;
-import com.api.authapi.application.exceptions.AccountExpiredException;
 import com.api.authapi.config.authentication.AuthenticationUserProvider;
+import com.api.authapi.domain.constant.Role;
 import com.api.authapi.domain.model.User;
 import com.api.authapi.infrastructure.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.*;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserHelperService {
@@ -44,7 +47,7 @@ public class UserHelperService {
             throw new AccountLockedException();
         }
         if (!user.isAccountNonExpired()) {
-            throw new AccountExpiredException();
+            throw new CustomAccountExpiredException();
         }
         if (!user.isCredentialsNonExpired()) {
             throw new AccountCredentialsExpiredException();
@@ -54,24 +57,28 @@ public class UserHelperService {
     public boolean isAdmin(User user) {
         return user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .anyMatch("ROLE_ADMIN"::equals);
+                .anyMatch(Role.ROLE_ADMIN.toString()::equals);
     }
 
-    public void authenticateUser(String email, String password) {
+    public User authenticateUser(String email, String password) {
         try {
+            User user = getUserByEmail(email);
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(email, password)
             );
+            return user;
         } catch (DisabledException ex) {
             throw new AccountDisabledException();
         } catch (LockedException ex) {
             throw new AccountLockedException();
         } catch (AccountExpiredException ex) {
-            throw new com.api.authapi.application.exceptions.AccountExpiredException();
+            throw new CustomAccountExpiredException();
         } catch (CredentialsExpiredException ex) {
             throw new AccountCredentialsExpiredException();
         } catch (BadCredentialsException ex) {
             throw new InvalidCredentialsException();
+        } catch (AuthenticationException ex) {
+            throw new CustomAuthenticationException();
         }
     }
 }

@@ -5,6 +5,8 @@ import com.api.authapi.application.saga.services.UserRegistrationSagaStateServic
 import com.api.authapi.application.services.AuthService;
 import com.api.authapi.application.services.UserService;
 import com.api.authapi.domain.saga.command.UserRegisterConfirmationCommand;
+import com.api.authapi.domain.saga.reply.UserRegisterFailureReply;
+import com.api.authapi.domain.saga.reply.UserRegisterSuccessReply;
 import com.api.authapi.domain.saga.state.UserRegistrationSagaState;
 import com.api.authapi.domain.saga.step.UserRegistrationSagaStep;
 import com.api.authapi.domain.dto.auth.AuthResponse;
@@ -26,7 +28,7 @@ public class UserRegistrationSagaOrchestrator {
     private final UserRegistrationSagaStateService sagaStateService;
     private final UserRegistrationPublisher replyPublisher;
 
-    public void handleUserRegisterCommand(@Valid UserRegisterInitialCommand cmd) {
+    public void handleUserRegisterInitialCommand(@Valid UserRegisterInitialCommand cmd) {
         UUID sagaId = cmd.sagaId();
         if (sagaStateService.isStepCompleted(sagaId, UserRegistrationSagaStep.USER_CREATED)) {
             return;
@@ -35,54 +37,47 @@ public class UserRegistrationSagaOrchestrator {
         try {
             AuthResponse response = authService.register(cmd);
             sagaStateService.markUserCreated(sagaId, response.getUser().getId());
-            publishUserRegisterReplySuccess(sagaId, response.getUser().getEmail(), response.getToken(), response.getRefreshToken());
-            sagaStateService.completeSaga(sagaId);
+            publishUserRegisterSuccessReply(sagaId, response.getUser().getEmail(), response.getToken(), response.getRefreshToken());
         }
         catch (Exception ex) {
             SagaErrorMapper.SagaError error = SagaErrorMapper.map(ex);
-            publishUserRegisterReplyFailure(sagaId, error.code(), error.message());
+            publishUserRegisterFailureReply(sagaId, error.code(), error.message());
         }
     }
 
-    private void publishUserRegisterReplySuccess(UUID sagaId,
+    private void publishUserRegisterSuccessReply(UUID sagaId,
                                                  String email,
                                                  String token,
                                                  String refreshToken) {
-        replyPublisher.publishUserRegisterReply(
-                UserRegisterReply.builder()
+        replyPublisher.publishUserRegisterSuccessReply(
+                UserRegisterSuccessReply.builder()
                         .sagaId(sagaId)
-                        .success(true)
                         .email(email)
                         .token(token)
                         .refreshToken(refreshToken)
                         .build());
     }
 
-    private void publishUserRegisterReplyFailure(UUID sagaId,
-                                                 int status,
-                                                 String reason) {
-        replyPublisher.publishUserRegisterReply(
-                UserRegisterReply.builder()
+    private void publishUserRegisterFailureReply(UUID sagaId,
+                                                 Integer status,
+                                                 String message) {
+        replyPublisher.publishUserRegisterFailureReply(
+                UserRegisterFailureReply.builder()
                         .sagaId(sagaId)
-                        .success(false)
-                        .errorMessage("[" + status + "] " + reason)
+                        .status(status)
+                        .message(message)
                         .build());
     }
 
-    public void handleCompensateRegisterCommand(@Valid UserRegisterCompensationCommand cmd) {
+    public void handleUserRegisterCompensationCommand(@Valid UserRegisterCompensationCommand cmd) {
         UUID sagaId = cmd.sagaId();
         UserRegistrationSagaState state = sagaStateService.getUserRegistrationSagaState(sagaId);
         userService.deleteUserById(state.getUserId());
         sagaStateService.compensateSaga(sagaId);
     }
 
-    public void handleUserRegisterInitialCommand(@Valid UserRegisterInitialCommand cmd) {
-    }
-
-    public void handleUserRegisterCompensationCommand(@Valid UserRegisterCompensationCommand cmd) {
-    }
-
     public void handleUserRegisterConfirmationCommand(@Valid UserRegisterConfirmationCommand cmd) {
-
+        UUID sagaId = cmd.sagaId();
+        sagaStateService.completeSaga(sagaId);
     }
 }

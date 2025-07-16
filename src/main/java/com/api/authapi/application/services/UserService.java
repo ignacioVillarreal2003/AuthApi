@@ -25,45 +25,45 @@ public class UserService {
 
     @Transactional
     public UserResponse updateCurrentUser(UpdateUserRequest request) {
+        log.debug("[UserService::updateCurrentUser] Update request received. Payload: {}", request);
         User user = userHelperService.getCurrentUser();
         userHelperService.verifyAccountStatus(user);
-
         if (request.lastPassword() != null && request.newPassword() != null) {
+            log.debug("[UserService::updateCurrentUser] Password update requested for userId={}", user.getId());
             if (!passwordEncoder.matches(request.lastPassword(), user.getPassword())) {
+                log.debug("[UserService::updateCurrentUser] Invalid current password for userId={}", user.getId());
                 throw new InvalidCredentialsException();
             }
-
             user.setPassword(passwordEncoder.encode(request.newPassword()));
         }
-
         userRepository.save(user);
-
+        log.debug("[UserService::updateCurrentUser] User updated successfully. userId={}", user.getId());
         return userResponseMapper.apply(user);
     }
 
     @Transactional
     public void deleteCurrentUser() {
+        log.debug("[UserService::deleteCurrentUser] Delete current user request");
         User user = userHelperService.getCurrentUser();
         userHelperService.verifyAccountStatus(user);
-
-        boolean isAdmin = userHelperService.isAdmin(user);
-        if (isAdmin) {
+        if (userHelperService.isAdmin(user)) {
+            log.debug("[UserService::deleteCurrentUser] Cannot delete admin user. userId={}", user.getId());
             throw new UserIsAdministratorException();
         }
-
         userRepository.delete(user);
+        log.debug("[UserService::deleteCurrentUser] User deleted. userId={}", user.getId());
     }
 
     @Transactional
     public void deleteUserById(Long id) {
+        log.debug("[UserService::deleteUserById] Delete user request. userId={}", id);
         User user = userHelperService.getUserById(id);
         userHelperService.verifyAccountStatus(user);
-
-        boolean isAdmin = userHelperService.isAdmin(user);
-        if (isAdmin) {
+        if (userHelperService.isAdmin(user)) {
+            log.debug("[UserService::deleteUserById] Cannot delete admin user. userId={}", id);
             throw new UserIsAdministratorException();
         }
-
         userRepository.delete(user);
+        log.debug("[UserService::deleteUserById] User deleted. userId={}", id);
     }
 }
