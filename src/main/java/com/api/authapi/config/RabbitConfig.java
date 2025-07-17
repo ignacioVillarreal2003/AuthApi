@@ -24,68 +24,68 @@ public class RabbitConfig {
     }
 
     @Bean
-    public Queue userRegisterInitialCommandQueue() {
-        return QueueBuilder.durable(rabbitProperties.getQueue().getUserRegisterInitialCommand()).build();
+    public Queue initiateUserRegistrationCommandQueue() {
+        return QueueBuilder.durable(rabbitProperties.getQueue().getInitiateUserRegistrationCommand()).build();
     }
 
     @Bean
-    public Queue userRegisterSuccessReplyQueue() {
-        return QueueBuilder.durable(rabbitProperties.getQueue().getUserRegisterSuccessReply()).build();
+    public Queue successUserRegistrationReplyQueue() {
+        return QueueBuilder.durable(rabbitProperties.getQueue().getSuccessUserRegistrationReply()).build();
     }
 
     @Bean
-    public Queue userRegisterFailureReplyQueue() {
-        return QueueBuilder.durable(rabbitProperties.getQueue().getUserRegisterFailureReply()).build();
+    public Queue failureUserRegistrationReplyQueue() {
+        return QueueBuilder.durable(rabbitProperties.getQueue().getFailureUserRegistrationReply()).build();
     }
 
     @Bean
-    public Queue userRegisterCompensationCommandQueue() {
-        return QueueBuilder.durable(rabbitProperties.getQueue().getUserRegisterCompensationCommand()).build();
+    public Queue rollbackUserRegistrationCommandQueue() {
+        return QueueBuilder.durable(rabbitProperties.getQueue().getRollbackUserRegistrationCommand()).build();
     }
 
     @Bean
-    public Queue userRegisterConfirmationCommandQueue() {
-        return QueueBuilder.durable(rabbitProperties.getQueue().getUserRegisterConfirmationCommand()).build();
+    public Queue confirmUserRegistrationCommandQueue() {
+        return QueueBuilder.durable(rabbitProperties.getQueue().getConfirmUserRegistrationCommand()).build();
     }
 
     @Bean
-    public Binding bindingUserRegisterInitialCommand() {
+    public Binding bindingInitiateUserRegistrationCommand() {
         return BindingBuilder
-                .bind(userRegisterInitialCommandQueue())
+                .bind(initiateUserRegistrationCommandQueue())
                 .to(authExchange())
-                .with(rabbitProperties.getRoutingKey().getUserRegisterInitialCommand());
+                .with(rabbitProperties.getRoutingKey().getInitiateUserRegistrationCommand());
     }
 
     @Bean
-    public Binding bindingUserRegisterSuccessReply() {
+    public Binding bindingSuccessUserRegistrationReply() {
         return BindingBuilder
-                .bind(userRegisterSuccessReplyQueue())
+                .bind(successUserRegistrationReplyQueue())
                 .to(authExchange())
-                .with(rabbitProperties.getRoutingKey().getUserRegisterSuccessReply());
+                .with(rabbitProperties.getRoutingKey().getSuccessUserRegistrationReply());
     }
 
     @Bean
-    public Binding bindingUserRegisterFailureReply() {
+    public Binding bindingFailureUserRegistrationReplyQueue() {
         return BindingBuilder
-                .bind(userRegisterFailureReplyQueue())
+                .bind(failureUserRegistrationReplyQueue())
                 .to(authExchange())
-                .with(rabbitProperties.getRoutingKey().getUserRegisterFailureReply());
+                .with(rabbitProperties.getRoutingKey().getFailureUserRegistrationReply());
     }
 
     @Bean
-    public Binding bindingUserRegisterCompensationCommand() {
+    public Binding bindingRollbackUserRegistrationCommand() {
         return BindingBuilder
-                .bind(userRegisterCompensationCommandQueue())
+                .bind(rollbackUserRegistrationCommandQueue())
                 .to(authExchange())
-                .with(rabbitProperties.getRoutingKey().getUserRegisterCompensationCommand());
+                .with(rabbitProperties.getRoutingKey().getRollbackUserRegistrationCommand());
     }
 
     @Bean
-    public Binding bindingUserRegisterConfirmationCommand() {
+    public Binding bindingConfirmUserRegistrationCommandQueue() {
         return BindingBuilder
-                .bind(userRegisterConfirmationCommandQueue())
+                .bind(confirmUserRegistrationCommandQueue())
                 .to(authExchange())
-                .with(rabbitProperties.getRoutingKey().getUserRegisterConfirmationCommand());
+                .with(rabbitProperties.getRoutingKey().getConfirmUserRegistrationCommand());
     }
 
     @Bean

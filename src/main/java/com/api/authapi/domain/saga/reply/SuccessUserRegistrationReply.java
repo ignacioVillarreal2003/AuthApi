@@ -12,8 +12,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserRegisterFailureReply implements Serializable {
+public class SuccessUserRegistrationReply implements Serializable {
         private UUID sagaId;
-        private Integer status;
-        private String message;
+        private String token;
+        private String refreshToken;
 }

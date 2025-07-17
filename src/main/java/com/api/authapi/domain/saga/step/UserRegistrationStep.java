@@ -1,6 +1,6 @@
 package com.api.authapi.domain.saga.step;
 
-public enum UserRegistrationSagaStep {
+public enum UserRegistrationStep {
     STARTED,
     CREATED,
     COMPLETED,

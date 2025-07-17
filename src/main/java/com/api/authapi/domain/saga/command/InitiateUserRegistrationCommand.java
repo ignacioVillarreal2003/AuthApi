@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 import java.util.UUID;
 
-public record UserRegisterInitialCommand(
+public record InitiateUserRegistrationCommand(
         @NotNull(message = "Saga id is required")
         UUID sagaId,
 

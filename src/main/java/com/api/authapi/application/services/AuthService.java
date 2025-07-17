@@ -8,7 +8,7 @@ import com.api.authapi.config.authentication.JwtService;
 import com.api.authapi.domain.dto.auth.AuthResponse;
 import com.api.authapi.domain.dto.auth.LoginUserRequest;
 import com.api.authapi.domain.dto.auth.RefreshTokenRequest;
-import com.api.authapi.domain.saga.command.UserRegisterInitialCommand;
+import com.api.authapi.domain.saga.command.InitiateUserRegistrationCommand;
 import com.api.authapi.domain.model.User;
 import com.api.authapi.infrastructure.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class AuthService {
     private final UserRoleService userRoleService;
 
     @Transactional
-    public AuthResponse register(UserRegisterInitialCommand request) {
+    public AuthResponse register(InitiateUserRegistrationCommand request) {
         log.info("[AuthService::register] Register request received. Payload: {}", request);
         Optional<User> existing = userRepository.findByEmail(request.email());
         if (existing.isPresent()) {
@@ -46,7 +46,7 @@ public class AuthService {
         return buildAuthResponse(user);
     }
 
-    private void registerUserInNewApp(User user, UserRegisterInitialCommand request) {
+    private void registerUserInNewApp(User user, InitiateUserRegistrationCommand request) {
         log.debug("[AuthService::registerUserInNewApp] Linking user {} to new roles", user.getEmail());
         userHelperService.verifyAccountStatus(user);
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
@@ -62,7 +62,7 @@ public class AuthService {
                 });
     }
 
-    private User createUser(UserRegisterInitialCommand request) {
+    private User createUser(InitiateUserRegistrationCommand request) {
         log.info("[AuthService::createUser] Creating new user with email: {}", request.email());
         User user = userRepository.save(
                 User.builder()

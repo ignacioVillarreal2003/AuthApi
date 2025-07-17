@@ -73,7 +73,7 @@ public class UserService {
     }
 
     @Transactional
-    public void handleUserRegisterCompensation(Long id) {
+    public void handleRollbackUserRegistration(Long id) {
         Optional<User> userOpt = userRepository.findById(id);
         if (userOpt.isEmpty()) {
             return;

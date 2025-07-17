@@ -4,11 +4,8 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
-public record UserRegisterCompensationCommand(
+public record RollbackUserRegistrationCommand(
         @NotNull(message = "Saga id is required")
-        UUID sagaId,
-
-        @NotNull(message = "Reason is required")
-        String reason
+        UUID sagaId
 ) {
 }

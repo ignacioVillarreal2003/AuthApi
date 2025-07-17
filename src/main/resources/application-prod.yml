@@ -46,14 +46,14 @@ rabbit:
   exchange:
     auth: authApi.exchange
   queue:
-    user-register-initial-command: authApi.userRegisterInitialCommand.queue
-    user-register-compensation-command: authApi.userRegisterCompensationCommand.queue
-    user-register-confirmation-command: authApi.userRegisterConfirmationCommand.queue
-    user-register-success-reply: authApi.userRegisterSuccessReply.queue
-    user-register-failure-reply: authApi.userRegisterFailureReply.queue
+    initiate-user-registration-command: authApi.initiateUserRegistrationCommand.queue
+    rollback-user-registration-command: authApi.rollbackUserRegistrationCommand.queue
+    confirm-user-registration-command: authApi.confirmUserRegistrationCommand.queue
+    failure-user-registration-reply: authApi.failureUserRegistrationReply.queue
+    success-user-registration-reply: authApi.successUserRegistrationReply.queue
   routing-key:
-    user-register-initial-command: authApi.userRegisterInitialCommand.routingKey
-    user-register-compensation-command: authApi.userRegisterCompensationCommand.routingKey
-    user-register-confirmation-command: authApi.userRegisterConfirmationCommand.routingKey
-    user-register-success-reply: authApi.userRegisterSuccessReply.routingKey
-    user-register-failure-reply: authApi.userRegisterFailureReply.routingKey
+    initiate-user-registration-command: authApi.initiateUserRegistrationCommand.routingKey
+    rollback-user-registration-command: authApi.rollbackUserRegistrationCommand.routingKey
+    confirm-user-registration-command: authApi.confirmUserRegistrationCommand.routingKey
+    failure-user-registration-reply: authApi.failureUserRegistrationReply.routingKey
+    success-user-registration-reply: authApi.successUserRegistrationReply.routingKey
