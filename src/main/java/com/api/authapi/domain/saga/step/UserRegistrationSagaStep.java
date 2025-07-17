@@ -1,8 +1,9 @@
 package com.api.authapi.domain.saga.step;
 
 public enum UserRegistrationSagaStep {
-    PENDING,
-    USER_CREATED,
+    STARTED,
+    CREATED,
     COMPLETED,
-    COMPENSATED
+    COMPENSATED,
+    FAILED
 }

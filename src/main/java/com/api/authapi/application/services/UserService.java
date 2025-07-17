@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -57,13 +59,26 @@ public class UserService {
     @Transactional
     public void deleteUserById(Long id) {
         log.info("[UserService::deleteUserById] Delete user request. userId={}", id);
-        User user = userHelperService.getUserById(id);
-        userHelperService.verifyAccountStatus(user);
-        if (userHelperService.isAdmin(user)) {
-            log.warn("[UserService::deleteUserById] Cannot delete admin user. userId={}", id);
-            throw new UserIsAdministratorException();
+        Optional<User> userOpt = userRepository.findById(id);
+        if (userOpt.isEmpty()) {
+            log.warn("[UserService::deleteUserById] User already deleted or not found. userId={}", id);
+            return;
         }
+
+        User user = userOpt.get();
+        userHelperService.verifyAccountStatus(user);
+
         userRepository.delete(user);
         log.info("[UserService::deleteUserById] User deleted. userId={}", id);
+    }
+
+    @Transactional
+    public void handleUserRegisterCompensation(Long id) {
+        Optional<User> userOpt = userRepository.findById(id);
+        if (userOpt.isEmpty()) {
+            return;
+        }
+        User user = userOpt.get();
+        userRepository.delete(user);
     }
 }

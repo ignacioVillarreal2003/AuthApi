@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -33,14 +34,14 @@ public class UserRegistrationSagaOrchestrator {
     public void handleUserRegisterInitialCommand(@Valid UserRegisterInitialCommand cmd) {
         UUID sagaId = cmd.sagaId();
         log.info("[UserRegistrationSagaOrchestrator::handleUserRegisterInitialCommand] Received saga start command. sagaId={}", sagaId);
-        if (sagaStateService.isStepCompleted(sagaId, UserRegistrationSagaStep.USER_CREATED)) {
+        UserRegistrationSagaState state = sagaStateService.getOrStartSaga(sagaId);
+        if (state.getStep() != UserRegistrationSagaStep.STARTED) {
             log.debug("[UserRegistrationSagaOrchestrator::handleUserRegisterInitialCommand] Step USER_CREATED already completed. sagaId={}", sagaId);
             return;
         }
-        sagaStateService.startSaga(sagaId);
         try {
             AuthResponse response = authService.register(cmd);
-            sagaStateService.markUserCreated(sagaId, response.getUser().getId());
+            sagaStateService.createSaga(sagaId, response.getUser().getId());
             log.info("[UserRegistrationSagaOrchestrator::handleUserRegisterInitialCommand] User created. sagaId={}, userId={}", sagaId, response.getUser().getId());
             publishUserRegisterSuccessReply(sagaId, response.getUser().getEmail(), response.getToken(), response.getRefreshToken());
         }
@@ -48,6 +49,7 @@ public class UserRegistrationSagaOrchestrator {
             log.warn("[UserRegistrationSagaOrchestrator::handleUserRegisterInitialCommand] Exception caught during user registration. sagaId={}", sagaId, ex);
             SagaErrorMapper.SagaError error = SagaErrorMapper.map(ex);
             publishUserRegisterFailureReply(sagaId, error.code(), error.message());
+            sagaStateService.failSaga(sagaId);
         }
     }
 
@@ -81,11 +83,16 @@ public class UserRegistrationSagaOrchestrator {
         UUID sagaId = cmd.sagaId();
         log.info("[UserRegistrationSagaOrchestrator::handleUserRegisterCompensationCommand] Compensating saga. sagaId={}", sagaId);
         UserRegistrationSagaState state = sagaStateService.getUserRegistrationSagaState(sagaId);
-        if (state.getStep().equals(UserRegistrationSagaStep.COMPLETED)) {
+        if (state == null) {
+            return;
+        }
+        if (List.of(UserRegistrationSagaStep.COMPENSATED,
+                        UserRegistrationSagaStep.COMPLETED)
+                .contains(state.getStep())) {
             log.debug("[UserRegistrationSagaOrchestrator::handleUserRegisterCompensationCommand] Saga is completed, cannot be compensated. sagaId={}", sagaId);
             return;
         }
-        userService.deleteUserById(state.getUserId());
+        userService.handleUserRegisterCompensation(state.getUserId());
         sagaStateService.compensateSaga(sagaId);
     }
 
@@ -93,10 +100,19 @@ public class UserRegistrationSagaOrchestrator {
         UUID sagaId = cmd.sagaId();
         log.info("[UserRegistrationSagaOrchestrator::handleUserRegisterConfirmationCommand] Confirming saga. sagaId={}", sagaId);
         UserRegistrationSagaState state = sagaStateService.getUserRegistrationSagaState(sagaId);
-        if (state.getStep().equals(UserRegistrationSagaStep.COMPENSATED)) {
+        if (state == null) {
+            return;
+        }
+        if (List.of(UserRegistrationSagaStep.COMPENSATED,
+                UserRegistrationSagaStep.COMPLETED)
+                .contains(state.getStep())) {
             log.debug("[UserRegistrationSagaOrchestrator::handleUserRegisterConfirmationCommand] Saga is compensated, cannot be completed. sagaId={}", sagaId);
             return;
         }
         sagaStateService.completeSaga(sagaId);
+    }
+
+    public void recoverCommand(UUID sagaId) {
+        sagaStateService.failSaga(sagaId);
     }
 }

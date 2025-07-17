@@ -18,12 +18,6 @@ spring:
     port: ${RABBITMQ_PORT}
     username: ${RABBITMQ_USERNAME}
     password: ${RABBITMQ_PASSWORD}
-    listener:
-      retry:
-        enabled: true
-        initial-interval: 1000
-        max-attempts: 5
-        multiplier: 2.0
     template:
       mandatory: true
 

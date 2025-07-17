@@ -1,5 +1,6 @@
 package com.api.authapi.application.saga.services;
 
+import com.api.authapi.application.exceptions.SagaNotFoundException;
 import com.api.authapi.domain.saga.step.UserRegistrationSagaStep;
 import com.api.authapi.domain.saga.state.UserRegistrationSagaState;
 import com.api.authapi.infrastructure.persistence.repositories.UserRegistrationSagaRepository;
@@ -16,9 +17,18 @@ public class UserRegistrationSagaStateService {
 
     private final UserRegistrationSagaRepository registerSagaRepository;
 
+    public UserRegistrationSagaState getOrStartSaga(UUID sagaId) {
+        return registerSagaRepository.findById(sagaId)
+                .orElseGet(() -> {
+                    log.info("Creating new saga state for sagaId={}", sagaId);
+                    return registerSagaRepository.save(new UserRegistrationSagaState(sagaId));
+                });
+    }
+
     public UserRegistrationSagaState getUserRegistrationSagaState(UUID sagaId) {
         log.debug("[UserRegistrationSagaStateService::getUserRegistrationSagaState] Getting saga state. sagaId={}", sagaId);
-        return registerSagaRepository.findById(sagaId).orElseThrow();
+        return registerSagaRepository.findById(sagaId)
+                .orElseThrow(() -> new SagaNotFoundException("Saga not found: " + sagaId));
     }
 
     public void startSaga(UUID sagaId) {
@@ -28,11 +38,12 @@ public class UserRegistrationSagaStateService {
         }
     }
 
-    public void markUserCreated(UUID sagaId, Long userId) {
-        log.info("[UserRegistrationSagaStateService::markUserCreated] Marking USER_CREATED. sagaId={}, userId={}", sagaId, userId);
+    public void createSaga(UUID sagaId,
+                           Long userId) {
+        log.info("[UserRegistrationSagaStateService::completeSaga] Marking saga as CREATED. sagaId={}", sagaId);
         registerSagaRepository.findById(sagaId).ifPresent(s -> {
+            s.markStep(UserRegistrationSagaStep.CREATED);
             s.setUserId(userId);
-            s.markStep(UserRegistrationSagaStep.USER_CREATED);
             registerSagaRepository.save(s);
         });
     }
@@ -53,11 +64,13 @@ public class UserRegistrationSagaStateService {
         });
     }
 
-    public boolean isStepCompleted(UUID sagaId, UserRegistrationSagaStep step) {
-        boolean completed = registerSagaRepository.findById(sagaId)
-                .map(s -> s.getStep().ordinal() >= step.ordinal())
-                .orElse(false);
-        log.debug("[UserRegistrationSagaStateService::isStepCompleted] sagaId={}, step={}, completed={}", sagaId, step, completed);
-        return completed;
+    public void failSaga(UUID sagaId) {
+        log.info("[UserRegistrationSagaStateService::compensateSaga] Marking saga as FAIL. sagaId={}", sagaId);
+        UserRegistrationSagaState state = registerSagaRepository.findById(sagaId).orElse(null);
+        if (state == null) {
+            state = new UserRegistrationSagaState(sagaId);
+        }
+        state.markStep(UserRegistrationSagaStep.FAILED);
+        registerSagaRepository.save(state);
     }
 }

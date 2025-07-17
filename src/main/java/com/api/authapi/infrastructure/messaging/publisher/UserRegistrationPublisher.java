@@ -17,24 +17,24 @@ public class UserRegistrationPublisher {
     private final RabbitTemplate rabbitTemplate;
     private final RabbitProperties rabbitProperties;
 
-    public void publishUserRegisterSuccessReply(UserRegisterSuccessReply message) {
-        log.info("[UserRegistrationPublisher::publishUserRegisterSuccessReply] Publishing success reply sagaId={}", message.getSagaId());
+    public void publishUserRegisterSuccessReply(UserRegisterSuccessReply reply) {
+        log.info("[UserRegistrationPublisher::publishUserRegisterSuccessReply] Publishing success reply sagaId={}", reply.getSagaId());
         rabbitTemplate.convertAndSend(
                 rabbitProperties.getExchange().getAuth(),
                 rabbitProperties.getRoutingKey().getUserRegisterSuccessReply(),
-                message
+                reply
         );
-        log.info("[UserRegistrationPublisher::publishUserRegisterSuccessReply] Success reply published sagaId={}", message.getSagaId());
+        log.info("[UserRegistrationPublisher::publishUserRegisterSuccessReply] Success reply published sagaId={}", reply.getSagaId());
     }
 
-    public void publishUserRegisterFailureReply(UserRegisterFailureReply message) {
+    public void publishUserRegisterFailureReply(UserRegisterFailureReply reply) {
         log.info("[UserRegistrationPublisher::publishUserRegisterFailureReply] Publishing failure reply sagaId={}, status={}, message={}",
-                message.getSagaId(), message.getStatus(), message.getMessage());
+                reply.getSagaId(), reply.getStatus(), reply.getMessage());
         rabbitTemplate.convertAndSend(
                 rabbitProperties.getExchange().getAuth(),
                 rabbitProperties.getRoutingKey().getUserRegisterFailureReply(),
-                message
+                reply
         );
-        log.info("[UserRegistrationPublisher::publishUserRegisterFailureReply] Failure reply published sagaId={}", message.getSagaId());
+        log.info("[UserRegistrationPublisher::publishUserRegisterFailureReply] Failure reply published sagaId={}", reply.getSagaId());
     }
 }

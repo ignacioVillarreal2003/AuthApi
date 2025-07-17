@@ -28,7 +28,7 @@ public class UserRegistrationSagaState {
 
     public UserRegistrationSagaState(UUID sagaId) {
         this.sagaId = sagaId;
-        this.step = UserRegistrationSagaStep.PENDING;
+        this.step = UserRegistrationSagaStep.STARTED;
         this.createdAt = Instant.now();
         this.updatedAt = this.createdAt;
     }

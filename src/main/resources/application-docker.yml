@@ -18,12 +18,6 @@ spring:
     port: 5672
     username: ignacio
     password: 12345678
-    listener:
-      retry:
-        enabled: true
-        initial-interval: 1000
-        max-attempts: 5
-        multiplier: 2.0
     template:
       mandatory: true
 

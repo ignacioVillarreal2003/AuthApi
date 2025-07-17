@@ -51,7 +51,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         else {
             log.debug("[AuthenticationFilter::doFilterInternal] No bearer token found in Authorization header");
         }
-
         filterChain.doFilter(request, response);
     }
 }
