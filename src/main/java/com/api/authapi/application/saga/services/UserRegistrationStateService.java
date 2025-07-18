@@ -3,7 +3,7 @@ package com.api.authapi.application.saga.services;
 import com.api.authapi.application.exceptions.SagaNotFoundException;
 import com.api.authapi.domain.saga.state.UserRegistrationState;
 import com.api.authapi.domain.saga.step.UserRegistrationStep;
-import com.api.authapi.infrastructure.persistence.repositories.UserRegistrationSagaRepository;
+import com.api.authapi.infrastructure.persistence.repositories.UserRegistrationStateRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ import java.util.UUID;
 @Slf4j
 public class UserRegistrationStateService {
 
-    private final UserRegistrationSagaRepository repository;
+    private final UserRegistrationStateRepository repository;
 
     public UserRegistrationState getOrStartSaga(UUID sagaId) {
         log.debug("[UserRegistrationSagaStateService::getOrStartSaga] Retrieving or starting new saga. sagaId={}", sagaId);

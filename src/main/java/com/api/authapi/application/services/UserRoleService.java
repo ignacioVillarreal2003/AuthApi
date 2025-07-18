@@ -2,7 +2,7 @@ package com.api.authapi.application.services;
 
 import com.api.authapi.application.exceptions.InvalidRoleException;
 import com.api.authapi.application.exceptions.RoleAlreadyAssignedException;
-import com.api.authapi.domain.constant.Roles;
+import com.api.authapi.domain.dto.role.RoleResponse;
 import com.api.authapi.domain.model.Role;
 import com.api.authapi.domain.model.User;
 import com.api.authapi.domain.model.UserRole;
@@ -23,11 +23,11 @@ public class UserRoleService {
     @Transactional
     public void assignRoleToUser(User user, String roleName) {
         log.info("[UserRoleService::assignRoleToUser] Assigning role '{}' to userId={}", roleName, user.getId());
-        if (!Roles.getRoles().contains(roleName)) {
+        Role role = roleService.getRoleByName(roleName);
+        if (!roleService.getAllRoles().stream().map(RoleResponse::getName).toList().contains(role.getName())) {
             log.warn("[UserRoleService::assignRoleToUser] Role '{}' is not found", roleName);
             throw new InvalidRoleException();
         }
-        Role role = roleService.getRoleByName(roleName);
         if (userRoleRepository.existsByUserAndRole(user, role)) {
             log.warn("[UserRoleService::assignRoleToUser] Role '{}' already assigned to userId={}", roleName, user.getId());
             throw new RoleAlreadyAssignedException();

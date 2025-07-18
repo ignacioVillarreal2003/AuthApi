@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 import java.util.UUID;
 
 @Repository
-public interface UserRegistrationSagaRepository extends CrudRepository<UserRegistrationState, UUID> {
+public interface UserRegistrationStateRepository extends CrudRepository<UserRegistrationState, UUID> {
 }

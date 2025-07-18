@@ -2,7 +2,6 @@ package com.api.authapi.application.helpers;
 
 import com.api.authapi.application.exceptions.*;
 import com.api.authapi.config.authentication.AuthenticationUserProvider;
-import com.api.authapi.domain.constant.Role;
 import com.api.authapi.domain.model.User;
 import com.api.authapi.infrastructure.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -73,7 +72,7 @@ public class UserHelperService {
     public boolean isAdmin(User user) {
         boolean isAdmin = user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .anyMatch(Role.ROLE_ADMIN.toString()::equals);
+                .anyMatch("ROLE_ADMIN"::equals);
         log.info("[UserHelperService::isAdmin] UserId={} isAdmin={}", user.getId(), isAdmin);
         return isAdmin;
     }
