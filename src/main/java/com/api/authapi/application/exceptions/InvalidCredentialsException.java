@@ -1,12 +1,10 @@
 package com.api.authapi.application.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-@ResponseStatus(HttpStatus.UNAUTHORIZED)
-public class InvalidCredentialsException extends RuntimeException {
-
+public class InvalidCredentialsException extends UnauthorizedException {
     public InvalidCredentialsException() {
-        super("Invalid credentials");
+        super(
+                "INVALID_CREDENTIALS",
+                "Invalid email or password."
+        );
     }
 }

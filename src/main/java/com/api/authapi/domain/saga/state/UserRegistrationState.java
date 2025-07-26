@@ -20,6 +20,10 @@ public class UserRegistrationState {
 
     private Long userId;
 
+    private String token;
+
+    private String refreshToken;
+
     private UserRegistrationStep step;
 
     private Instant createdAt;

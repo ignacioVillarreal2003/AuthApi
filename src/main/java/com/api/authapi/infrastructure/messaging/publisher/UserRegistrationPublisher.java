@@ -2,6 +2,7 @@ package com.api.authapi.infrastructure.messaging.publisher;
 
 import com.api.authapi.config.properties.RabbitProperties;
 
+import com.api.authapi.domain.saga.reply.AwaitingVerificationUserRegistrationReply;
 import com.api.authapi.domain.saga.reply.FailureUserRegistrationReply;
 import com.api.authapi.domain.saga.reply.SuccessUserRegistrationReply;
 import lombok.RequiredArgsConstructor;
@@ -18,23 +19,26 @@ public class UserRegistrationPublisher {
     private final RabbitProperties rabbitProperties;
 
     public void publishSuccessUserRegistrationReply(SuccessUserRegistrationReply reply) {
-        log.info("[UserRegistrationPublisher::publishSuccessUserRegistrationReply] Publishing success reply. sagaId={}", reply.getSagaId());
         rabbitTemplate.convertAndSend(
                 rabbitProperties.getExchange().getAuth(),
                 rabbitProperties.getRoutingKey().getSuccessUserRegistrationReply(),
                 reply
         );
-        log.info("[UserRegistrationPublisher::publishSuccessUserRegistrationReply] Success reply published. sagaId={}", reply.getSagaId());
     }
 
     public void publishFailureUserRegistrationReply(FailureUserRegistrationReply reply) {
-        log.info("[UserRegistrationPublisher::publishFailureUserRegistrationReply] Publishing failure reply. sagaId={}, status={}, message={}",
-                reply.getSagaId(), reply.getStatus(), reply.getMessage());
         rabbitTemplate.convertAndSend(
                 rabbitProperties.getExchange().getAuth(),
                 rabbitProperties.getRoutingKey().getFailureUserRegistrationReply(),
                 reply
         );
-        log.info("[UserRegistrationPublisher::publishFailureUserRegistrationReply] Failure reply published. sagaId={}", reply.getSagaId());
+    }
+
+    public void publishAwaitingVerificationUserRegistrationReply(AwaitingVerificationUserRegistrationReply reply) {
+        rabbitTemplate.convertAndSend(
+                rabbitProperties.getExchange().getAuth(),
+                rabbitProperties.getRoutingKey().getAwaitingVerificationUserRegistrationReply(),
+                reply
+        );
     }
 }

@@ -19,7 +19,7 @@ public class UserResponseMapper implements Function<User, UserResponse> {
         return UserResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())
-                .roles(user.getRoles()
+                .roles(user.getUserRoles()
                         .stream()
                         .map(UserRole::getRole)
                         .toList()

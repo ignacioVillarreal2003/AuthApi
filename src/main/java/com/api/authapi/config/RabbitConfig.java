@@ -39,6 +39,11 @@ public class RabbitConfig {
     }
 
     @Bean
+    public Queue awaitingVerificationUserRegistrationReplyQueue() {
+        return QueueBuilder.durable(rabbitProperties.getQueue().getAwaitingVerificationUserRegistrationReply()).build();
+    }
+
+    @Bean
     public Queue rollbackUserRegistrationCommandQueue() {
         return QueueBuilder.durable(rabbitProperties.getQueue().getRollbackUserRegistrationCommand()).build();
     }
@@ -71,6 +76,15 @@ public class RabbitConfig {
                 .to(authExchange())
                 .with(rabbitProperties.getRoutingKey().getFailureUserRegistrationReply());
     }
+
+    @Bean
+    public Binding bindingAwaitingVerificationUserRegistrationReplyQueue() {
+        return BindingBuilder
+                .bind(awaitingVerificationUserRegistrationReplyQueue())
+                .to(authExchange())
+                .with(rabbitProperties.getRoutingKey().getAwaitingVerificationUserRegistrationReply());
+    }
+
 
     @Bean
     public Binding bindingRollbackUserRegistrationCommand() {

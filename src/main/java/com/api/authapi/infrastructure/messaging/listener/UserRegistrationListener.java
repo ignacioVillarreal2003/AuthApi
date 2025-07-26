@@ -30,14 +30,11 @@ public class UserRegistrationListener {
     )
     @RabbitListener(queues = "${rabbit.queue.initiate-user-registration-command}")
     public void handleInitiateUserRegistrationCommand(@Valid @Payload InitiateUserRegistrationCommand cmd) {
-        log.info("[UserRegistrationListener::handleInitiateUserRegistrationCommand] Received command sagaId={}", cmd.sagaId());
         orchestrator.handleInitiateUserRegistrationCommand(cmd);
-        log.info("[UserRegistrationListener::handleInitiateUserRegistrationCommand] Processing finished sagaId={}", cmd.sagaId());
     }
 
     @Recover
     public void recoverInitiateUserRegistrationCommand(TransientDataAccessException ex, InitiateUserRegistrationCommand cmd) {
-        log.error("[UserRegistrationListener::recoverInitiateUserRegistrationCommand] Initial registration permanently failed. sagaId={}", cmd.sagaId(), ex);
         orchestrator.recoverCommand(cmd.sagaId());
     }
 
@@ -48,15 +45,11 @@ public class UserRegistrationListener {
     )
     @RabbitListener(queues = "${rabbit.queue.rollback-user-registration-command}")
     public void handleRollbackUserRegistrationCommand(@Valid @Payload RollbackUserRegistrationCommand cmd) {
-        log.info("[UserRegistrationListener::handleRollbackUserRegistrationCommand] Received command sagaId={}", cmd.sagaId());
         orchestrator.handleRollbackUserRegistrationCommand(cmd);
-        log.info("[UserRegistrationListener::handleRollbackUserRegistrationCommand] Processing finished sagaId={}", cmd.sagaId());
-
     }
 
     @Recover
     public void recoverRollbackUserRegistrationCommand(TransientDataAccessException ex, RollbackUserRegistrationCommand cmd) {
-        log.error("[UserRegistrationListener::recoverRollbackUserRegistrationCommand] Rollback permanently failed. sagaId={}", cmd.sagaId(), ex);
         orchestrator.recoverCommand(cmd.sagaId());
     }
 
@@ -67,14 +60,11 @@ public class UserRegistrationListener {
     )
     @RabbitListener(queues = "${rabbit.queue.confirm-user-registration-command}")
     public void handleConfirmUserRegistrationCommand(@Valid @Payload ConfirmUserRegistrationCommand cmd) {
-        log.info("[UserRegistrationListener::handleConfirmUserRegistrationCommand] Received command sagaId={}", cmd.sagaId());
         orchestrator.handleConfirmUserRegistrationCommand(cmd);
-        log.info("[UserRegistrationListener::handleConfirmUserRegistrationCommand] Processing finished sagaId={}", cmd.sagaId());
     }
 
     @Recover
     public void recoverConfirmUserRegistrationCommand(TransientDataAccessException ex, ConfirmUserRegistrationCommand cmd) {
-        log.error("[UserRegistrationListener::recoverConfirmUserRegistrationCommand] Confirmation permanently failed after retries. sagaId={}", cmd.sagaId(), ex);
         orchestrator.recoverCommand(cmd.sagaId());
     }
 }

@@ -33,6 +33,13 @@ spring:
       host: ${REDIS_HOST_NAME}
       port: ${REDIS_HOST_PORT}
 
+mail:
+  username: ${MAIL_USERNAME}
+  password: tu${MAIL_PASSWORD}
+
+app:
+  base-url: ${APP_BASE_URL}
+
 jwt:
   secret: ${JWT_SECRET}
   expiration:
@@ -51,9 +58,11 @@ rabbit:
     confirm-user-registration-command: authApi.confirmUserRegistrationCommand.queue
     failure-user-registration-reply: authApi.failureUserRegistrationReply.queue
     success-user-registration-reply: authApi.successUserRegistrationReply.queue
+    awaiting-verification-user-registration-reply: authApi.awaitingVerificationUserRegistrationReply.queue
   routing-key:
     initiate-user-registration-command: authApi.initiateUserRegistrationCommand.routingKey
     rollback-user-registration-command: authApi.rollbackUserRegistrationCommand.routingKey
     confirm-user-registration-command: authApi.confirmUserRegistrationCommand.routingKey
     failure-user-registration-reply: authApi.failureUserRegistrationReply.routingKey
     success-user-registration-reply: authApi.successUserRegistrationReply.routingKey
+    awaiting-verification-user-registration-reply: authApi.awaitingVerificationUserRegistrationReply.queue

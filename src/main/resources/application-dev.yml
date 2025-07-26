@@ -33,6 +33,13 @@ spring:
       host: localhost
       port: 6379
 
+mail:
+  username: pacoelvillanodelbarrio@gmail.com
+  password: nakc eazm pleg cviw
+
+app:
+  base-url: http://localhost:8080/api/v1
+
 jwt:
   secret: 23e586808ea364607079ec5b830ba702e80680339864b175eb2f5a13abd214e7
   expiration:
@@ -53,12 +60,14 @@ rabbit:
     confirm-user-registration-command: authApi.confirmUserRegistrationCommand.queue
     failure-user-registration-reply: authApi.failureUserRegistrationReply.queue
     success-user-registration-reply: authApi.successUserRegistrationReply.queue
+    awaiting-verification-user-registration-reply: authApi.awaitingVerificationUserRegistrationReply.queue
   routing-key:
     initiate-user-registration-command: authApi.initiateUserRegistrationCommand.routingKey
     rollback-user-registration-command: authApi.rollbackUserRegistrationCommand.routingKey
     confirm-user-registration-command: authApi.confirmUserRegistrationCommand.routingKey
     failure-user-registration-reply: authApi.failureUserRegistrationReply.routingKey
     success-user-registration-reply: authApi.successUserRegistrationReply.routingKey
+    awaiting-verification-user-registration-reply: authApi.awaitingVerificationUserRegistrationReply.queue
 
 logging:
   level:

@@ -5,7 +5,13 @@ import lombok.*;
 import org.hibernate.envers.Audited;
 
 @Entity
-@Table(name = "user_role")
+@Table(
+        name = "user_roles",
+        uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "role_id"}),
+        indexes = {
+                @Index(name = "idx_user_roles_user_id_role_id", columnList = "user_id, role_id", unique = true)
+        }
+)
 @Audited
 @Getter
 @Setter
@@ -16,6 +22,7 @@ public class UserRole extends Auditable<String> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -1,7 +1,10 @@
 package com.api.authapi.application.exceptions;
 
-public class SagaNotFoundException extends RuntimeException {
+public class SagaNotFoundException extends NotFoundException {
     public SagaNotFoundException() {
-        super("Saga not found");
+        super(
+                "SAGA_NOT_FOUND",
+                "Saga not found."
+        );
     }
 }

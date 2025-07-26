@@ -33,12 +33,16 @@ public class UserRegistrationStateService {
     }
 
     public void markCreated(UUID sagaId,
-                           Long userId) {
+                            Long userId,
+                            String token,
+                            String refreshToken) {
         log.info("[UserRegistrationSagaStateService::markCreated] Marking saga as CREATED. sagaId={}, userId={}", sagaId, userId);
         UserRegistrationState state = repository.findById(sagaId)
                 .orElseThrow(SagaNotFoundException::new);
         state.markStep(UserRegistrationStep.CREATED);
         state.setUserId(userId);
+        state.setToken(token);
+        state.setRefreshToken(refreshToken);
         repository.save(state);
     }
 

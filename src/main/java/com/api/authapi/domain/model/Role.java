@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "role")
+@Table(name = "roles")
 @Audited
 @Getter
 @Setter
@@ -19,12 +19,13 @@ public class Role extends Auditable<String> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "name", unique = true, nullable = false, length = 50)
     private String name;
 
     @Builder.Default
     @OneToMany(mappedBy = "role",  cascade = CascadeType.ALL, orphanRemoval = true,  fetch = FetchType.LAZY)
-    private Set<UserRole> users = new HashSet<>();
+    private Set<UserRole> userRoles = new HashSet<>();
 }

@@ -17,11 +17,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) {
-        log.info("[CustomUserDetailsService::loadUserByUsername] Attempting to load user: {}", username);
         return userRepository.findByEmail(username)
-                .orElseThrow(() -> {
-                    log.warn("[CustomUserDetailsService::loadUserByUsername] User not found: {}", username);
-                    return new UserNotFoundException();
-                });
+                .orElseThrow(UserNotFoundException::new);
     }
 }

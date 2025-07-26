@@ -1,6 +1,6 @@
 package com.api.authapi.api.controllers;
 
-import com.api.authapi.application.services.UserRoleService;
+import com.api.authapi.application.services.userRole.UserRoleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

@@ -13,7 +13,7 @@ public record InitiateUserRegistrationCommand(
 
         @NotNull(message = "Email is required")
         @Email(message = "Email is invalid")
-        @Size(max = 64, message = "Email must be less than 64 characters")
+        @Size(max = 100, message = "Email must be less than 100 characters")
         String email,
 
         @NotNull(message = "Password is required")

@@ -7,11 +7,19 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "usr")
+@Table(
+        name = "users",
+        uniqueConstraints = @UniqueConstraint(columnNames = "email"),
+        indexes = {
+                @Index(name = "idx_users_email", columnList = "email"),
+                @Index(name = "idx_users_activation_token", columnList = "activation_token")
+        }
+)
 @Audited
 @Getter
 @Setter
@@ -21,41 +29,60 @@ import java.util.stream.Collectors;
 public class User extends Auditable<String> implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "email", unique = true, nullable = false, length = 100)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "password", nullable = false, length = 255)
     private String password;
 
-    private String refreshToken;
-
     @Builder.Default
-    @Column(nullable = false)
+    @Column(name = "account_non_expired", nullable = false)
     private boolean accountNonExpired = true;
 
     @Builder.Default
-    @Column(nullable = false)
+    @Column(name = "account_non_locked", nullable = false)
     private boolean accountNonLocked = true;
 
     @Builder.Default
-    @Column(nullable = false)
-    private boolean credentialsNonExpired = true;
+    @Column(name = "failed_login_attempts", nullable = false, columnDefinition = "smallint default 0")
+    private int failedLoginAttempts = 0;
+
+    @Column(name = "lockout_until")
+    private Instant lockoutUntil;
 
     @Builder.Default
-    @Column(nullable = false)
-    private boolean enabled = true;
+    @Column(name = "credentials_non_expired", nullable = false)
+    private boolean credentialsNonExpired = true;
+
+    @Column(name = "last_password_change")
+    private Instant lastPasswordChange = Instant.now();
+
+    @Builder.Default
+    @Column(name = "enabled", nullable = false)
+    private boolean enabled = false;
+
+    @Column(name = "activation_token", columnDefinition = "uuid")
+    private UUID activationToken;
+
+    @Column(name = "activation_token_expiration")
+    private Instant activationTokenExpiration;
 
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<UserRole> roles = new HashSet<>();
+    private List<RefreshToken> refreshTokens = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<UserRole> userRoles = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(role ->
-                        new SimpleGrantedAuthority(role.getRole().getName()))
+        return userRoles.stream()
+                .map(userRole ->
+                        new SimpleGrantedAuthority(userRole.getRole().getName()))
                 .collect(Collectors.toList());
     }
 

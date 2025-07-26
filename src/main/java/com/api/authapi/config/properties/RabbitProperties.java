@@ -28,6 +28,7 @@ public class RabbitProperties {
         private String confirmUserRegistrationCommand;
         private String failureUserRegistrationReply;
         private String successUserRegistrationReply;
+        private String awaitingVerificationUserRegistrationReply;
     }
 
     @Getter
@@ -38,5 +39,6 @@ public class RabbitProperties {
         private String confirmUserRegistrationCommand;
         private String failureUserRegistrationReply;
         private String successUserRegistrationReply;
+        private String awaitingVerificationUserRegistrationReply;
     }
 }

@@ -1,12 +1,10 @@
 package com.api.authapi.application.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class CustomAuthenticationException extends RuntimeException {
-
+public class CustomAuthenticationException extends BadRequestException {
     public CustomAuthenticationException() {
-        super("Authentication failed");
+        super(
+                "AUTHENTICATION",
+                "Authentication failed"
+        );
     }
 }

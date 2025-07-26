@@ -1,2 +1,5 @@
 # AuthApi
-test
+
+- DLQ para las colas
+- Outbox Pattern
+- 
