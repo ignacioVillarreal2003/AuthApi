@@ -4,7 +4,7 @@ public class CustomAuthenticationException extends BadRequestException {
     public CustomAuthenticationException() {
         super(
                 "AUTHENTICATION",
-                "Authentication failed"
+                "Authentication failed."
         );
     }
 }

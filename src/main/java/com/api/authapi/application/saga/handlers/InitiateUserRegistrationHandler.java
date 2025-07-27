@@ -2,9 +2,7 @@ package com.api.authapi.application.saga.handlers;
 
 import com.api.authapi.application.saga.helpers.SagaErrorMapper;
 import com.api.authapi.application.saga.services.UserRegistrationStateService;
-import com.api.authapi.application.services.auth.RegisterRollbackService;
-import com.api.authapi.application.services.auth.RegisterService;
-import com.api.authapi.domain.dto.auth.AuthResponse;
+import com.api.authapi.application.services.authentication.RegisterService;
 import com.api.authapi.domain.saga.RegisterResult;
 import com.api.authapi.domain.saga.command.InitiateUserRegistrationCommand;
 import com.api.authapi.domain.saga.reply.AwaitingVerificationUserRegistrationReply;
@@ -25,7 +23,6 @@ import java.util.UUID;
 public class InitiateUserRegistrationHandler {
 
     private final RegisterService registerService;
-    private final RegisterRollbackService registerRollbackService;
     private final UserRegistrationStateService userRegistrationStateService;
     private final UserRegistrationPublisher publisher;
     private final RecoverUserRegistrationHandler recoverUserRegistrationService;
@@ -34,27 +31,30 @@ public class InitiateUserRegistrationHandler {
     public void handle(@Valid InitiateUserRegistrationCommand cmd) {
         UUID sagaId = cmd.sagaId();
         try {
-            UserRegistrationState state = userRegistrationStateService.getOrStartSaga(sagaId);
+            UserRegistrationState state = userRegistrationStateService.getOrStartSaga(sagaId, cmd.email(), cmd.roles());
             if (state.getStep() != UserRegistrationStep.STARTED) {
                 return;
             }
-            RegisterResult response = registerService.execute(cmd, sagaId);
-            try {
-                userRegistrationStateService.markCreated(sagaId, response.getAuthResponse().getUser().getId(), response.getAuthResponse().getToken(), response.getAuthResponse().getRefreshToken());
-                if (response.isNewUser()) {
-                    publishAwaitingVerificationUserRegistrationReply(sagaId);
-                } else {
-                    publishSuccessUserRegistrationReply(sagaId, response.getAuthResponse().getToken(), response.getAuthResponse().getRefreshToken());
-                }
-            }
-            catch (Exception ex) {
-                registerRollbackService.execute(state.getUserId());
+            RegisterResult response = registerService.register(sagaId,
+                    cmd.email(),
+                    cmd.password(),
+                    cmd.roles());
+            userRegistrationStateService.markCreated(sagaId,
+                    response.getAuthResponse().getUser().getId(),
+                    response.getAuthResponse().getToken(),
+                    response.getAuthResponse().getRefreshToken(),
+                    response.isNewUser());
+            if (response.isNewUser()) {
+                publishAwaitingVerificationUserRegistrationReply(sagaId);
+                userRegistrationStateService.markPendingVerification(sagaId);
+            } else {
+                publishSuccessUserRegistrationReply(sagaId, response.getAuthResponse().getToken(), response.getAuthResponse().getRefreshToken());
             }
         }
         catch (Exception ex) {
             SagaErrorMapper.SagaError error = SagaErrorMapper.map(ex);
             publishFailureUserRegistrationReply(sagaId, error.code(), error.message());
-            recoverUserRegistrationService.handle(sagaId);
+            recoverUserRegistrationService.recoverUserRegistration(sagaId);
         }
     }
 

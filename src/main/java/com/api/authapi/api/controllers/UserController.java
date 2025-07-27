@@ -19,25 +19,25 @@ public class UserController {
     private final UserService userService;
 
     @PutMapping("/me/password")
-    public ResponseEntity<UserResponse> updatePassword(@Valid @RequestBody UpdatePasswordRequest request) {
+    public ResponseEntity<UserResponse> changePassword(@Valid @RequestBody ChangePasswordRequest request) {
         userService.changePassword(request);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/me/reactivation")
-    public ResponseEntity<UserResponse> reactiveAccount(@Valid @RequestBody ReactivationRequest request) {
+    public ResponseEntity<UserResponse> requestAccountReactivation(@Valid @RequestBody ReactivationRequest request) {
         userService.requestAccountReactivation(request);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/me/enable/{activationToken}")
-    public ResponseEntity<Void> enableAccount(@PathVariable UUID activationToken) {
+    public ResponseEntity<Void> activateAccount(@PathVariable UUID activationToken) {
         userService.activateAccount(activationToken);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/me/disable")
-    public ResponseEntity<Void> disableAccount() {
+    public ResponseEntity<Void> deactivateAccount() {
         userService.deactivateAccount();
         return ResponseEntity.noContent().build();
     }

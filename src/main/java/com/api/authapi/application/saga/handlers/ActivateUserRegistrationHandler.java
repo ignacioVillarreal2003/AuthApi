@@ -20,10 +20,10 @@ public class ActivateUserRegistrationHandler {
     private final UserRegistrationPublisher publisher;
     private final RecoverUserRegistrationHandler recoverUserRegistrationService;
 
-    public void handle(UUID sagaId) {
+    public void activateUserRegistration(UUID sagaId) {
         try {
-            UserRegistrationState state = userRegistrationStateService.getOrStartSaga(sagaId);
-            if (state.getStep() != UserRegistrationStep.CREATED) {
+            UserRegistrationState state = userRegistrationStateService.getSagaState(sagaId);
+            if (state.getStep() != UserRegistrationStep.PENDING_VERIFICATION) {
                 return;
             }
             publishSuccessUserRegistrationReply(sagaId, state.getToken(), state.getRefreshToken());
@@ -31,7 +31,7 @@ public class ActivateUserRegistrationHandler {
         catch (Exception ex) {
             SagaErrorMapper.SagaError error = SagaErrorMapper.map(ex);
             publishFailureUserRegistrationReply(sagaId, error.code(), error.message());
-            recoverUserRegistrationService.handle(sagaId);
+            recoverUserRegistrationService.recoverUserRegistration(sagaId);
         }
     }
 
@@ -56,5 +56,4 @@ public class ActivateUserRegistrationHandler {
                         .message(message)
                         .build());
     }
-
 }

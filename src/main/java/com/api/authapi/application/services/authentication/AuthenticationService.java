@@ -1,4 +1,4 @@
-package com.api.authapi.application.services.auth;
+package com.api.authapi.application.services.authentication;
 
 import com.api.authapi.domain.dto.auth.AuthResponse;
 import com.api.authapi.domain.dto.auth.LoginRequest;
@@ -10,30 +10,30 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class AuthService {
+public class AuthenticationService {
 
     private final LoginService loginService;
-    private final CloseAllSessionsService closeAllSessionsService;
     private final LogoutService logoutService;
     private final RefreshSessionService refreshSessionService;
 
     @Transactional
     public AuthResponse login(LoginRequest request) {
-        return loginService.execute(request);
+        return loginService.login(request.email(),
+                request.password());
     }
 
     @Transactional
     public void logout(LogoutRequest request) {
-        logoutService.execute(request);
+        logoutService.logout(request.refreshToken());
     }
 
     @Transactional
-    public AuthResponse refresh(RefreshRequest request) {
-        return refreshSessionService.execute(request);
+    public AuthResponse refreshSession(RefreshRequest request) {
+        return refreshSessionService.refreshSession(request.refreshToken());
     }
 
     @Transactional
-    public void closeAllSessions() {
-        closeAllSessionsService.execute();
+    public void logoutAllSessions() {
+        logoutService.logoutAllSessions();
     }
 }

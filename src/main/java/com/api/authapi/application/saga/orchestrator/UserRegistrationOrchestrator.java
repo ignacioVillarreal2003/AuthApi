@@ -26,18 +26,18 @@ public class UserRegistrationOrchestrator {
     }
 
     public void handleActiveAccount(UUID sagaId) {
-        activateUserRegistrationHandler.handle(sagaId);
+        activateUserRegistrationHandler.activateUserRegistration(sagaId);
     }
 
     public void handleRollbackUserRegistrationCommand(RollbackUserRegistrationCommand cmd) {
-        rollbackUserRegistrationHandler.handle(cmd);
+        rollbackUserRegistrationHandler.rollbackUserRegistration(cmd);
     }
 
     public void handleConfirmUserRegistrationCommand(ConfirmUserRegistrationCommand cmd) {
-        confirmUserRegistrationHandler.handle(cmd);
+        confirmUserRegistrationHandler.confirmUserRegistration(cmd);
     }
 
     public void recoverCommand(UUID sagaId) {
-        recoverUserRegistrationHandler.handle(sagaId);
+        recoverUserRegistrationHandler.recoverUserRegistration(sagaId);
     }
 }

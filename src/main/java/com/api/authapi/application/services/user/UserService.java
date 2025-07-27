@@ -1,7 +1,7 @@
 package com.api.authapi.application.services.user;
 
 import com.api.authapi.domain.dto.user.ReactivationRequest;
-import com.api.authapi.domain.dto.user.UpdatePasswordRequest;
+import com.api.authapi.domain.dto.user.ChangePasswordRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,28 +12,27 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final DeactivateAccountService deactivateAccountService;
-    private final ActivateAccountService activateAccountService;
-    private final RequestAccountReactivationService requestAccountReactivationService;
-    private final ChangePasswordService changePasswordService;
+    private final AccountDeactivationService accountDeactivationService;
+    private final AccountActivationService accountActivationService;
+    private final UserUpdateService userUpdateService;
 
     @Transactional
     public void deactivateAccount() {
-        deactivateAccountService.execute();
+        accountDeactivationService.deactivateAccount();
     }
 
     @Transactional
-    public void activateAccount(UUID activationToken) {
-        activateAccountService.execute(activationToken);
+    public void activateAccount(UUID token) {
+        accountActivationService.activateAccount(token);
     }
 
     @Transactional
     public void requestAccountReactivation(ReactivationRequest request) {
-        requestAccountReactivationService.execute(request);
+        accountActivationService.requestAccountReactivation(request.email());
     }
 
     @Transactional
-    public void changePassword(UpdatePasswordRequest request) {
-        changePasswordService.execute(request);
+    public void changePassword(ChangePasswordRequest request) {
+        userUpdateService.changePassword(request.lastPassword(), request.newPassword());
     }
 }

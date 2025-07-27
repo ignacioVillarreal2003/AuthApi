@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -17,17 +18,14 @@ public class UserRegistrationStateService {
 
     private final UserRegistrationStateRepository repository;
 
-    public UserRegistrationState getOrStartSaga(UUID sagaId) {
-        log.debug("[UserRegistrationSagaStateService::getOrStartSaga] Retrieving or starting new saga. sagaId={}", sagaId);
+    public UserRegistrationState getOrStartSaga(UUID sagaId, String email, List<String> roles) {
         return repository.findById(sagaId)
                 .orElseGet(() -> {
-                    log.info("[UserRegistrationSagaStateService::getOrStartSaga] Creating new saga state. sagaId={}", sagaId);
-                    return repository.save(new UserRegistrationState(sagaId));
+                    return repository.save(new UserRegistrationState(sagaId, email, roles));
                 });
     }
 
     public UserRegistrationState getSagaState(UUID sagaId) {
-        log.debug("[UserRegistrationSagaStateService::getSagaState] Getting saga state. sagaId={}", sagaId);
         return repository.findById(sagaId)
                 .orElseThrow(SagaNotFoundException::new);
     }
@@ -35,19 +33,26 @@ public class UserRegistrationStateService {
     public void markCreated(UUID sagaId,
                             Long userId,
                             String token,
-                            String refreshToken) {
-        log.info("[UserRegistrationSagaStateService::markCreated] Marking saga as CREATED. sagaId={}, userId={}", sagaId, userId);
+                            String refreshToken,
+                            boolean isNewUser) {
         UserRegistrationState state = repository.findById(sagaId)
                 .orElseThrow(SagaNotFoundException::new);
-        state.markStep(UserRegistrationStep.CREATED);
+        state.markStep(UserRegistrationStep.USER_CREATED);
         state.setUserId(userId);
         state.setToken(token);
         state.setRefreshToken(refreshToken);
+        state.setNewUser(isNewUser);
+        repository.save(state);
+    }
+
+    public void markPendingVerification(UUID sagaId) {
+        UserRegistrationState state = repository.findById(sagaId)
+                .orElseThrow(SagaNotFoundException::new);
+        state.markStep(UserRegistrationStep.PENDING_VERIFICATION);
         repository.save(state);
     }
 
     public void markCompleted(UUID sagaId) {
-        log.info("[UserRegistrationSagaStateService::markCompleted] Marking saga as COMPLETED. sagaId={}", sagaId);
         UserRegistrationState state = repository.findById(sagaId)
                 .orElseThrow(SagaNotFoundException::new);
         state.markStep(UserRegistrationStep.COMPLETED);
@@ -55,7 +60,6 @@ public class UserRegistrationStateService {
     }
 
     public void markCompensated(UUID sagaId) {
-        log.info("[UserRegistrationSagaStateService::markCompensated] Marking saga as COMPENSATED. sagaId={}", sagaId);
         UserRegistrationState state = repository.findById(sagaId)
                 .orElseThrow(SagaNotFoundException::new);
         state.markStep(UserRegistrationStep.COMPENSATED);
@@ -63,7 +67,6 @@ public class UserRegistrationStateService {
     }
 
     public void markFailed(UUID sagaId) {
-        log.info("[UserRegistrationSagaStateService::markFailed] Marking saga as FAILED. sagaId={}", sagaId);
         UserRegistrationState state = repository.findById(sagaId)
                 .orElseThrow(SagaNotFoundException::new);
         state.markStep(UserRegistrationStep.FAILED);

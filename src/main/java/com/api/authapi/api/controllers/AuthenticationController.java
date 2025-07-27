@@ -1,7 +1,7 @@
 package com.api.authapi.api.controllers;
 
 import com.api.authapi.application.saga.orchestrator.UserRegistrationOrchestrator;
-import com.api.authapi.application.services.auth.AuthService;
+import com.api.authapi.application.services.authentication.AuthenticationService;
 import com.api.authapi.application.services.user.UserService;
 import com.api.authapi.domain.dto.auth.AuthResponse;
 import com.api.authapi.domain.dto.auth.LoginRequest;
@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController()
-@RequestMapping("api/v1/auth")
+@RequestMapping("api/v1/authentication")
 @RequiredArgsConstructor
 @Slf4j
-public class AuthController {
+public class AuthenticationController {
 
-    private final AuthService authService;
+    private final AuthenticationService authService;
     private final UserService userService;
     private final UserRegistrationOrchestrator userRegistrationOrchestrator;
 
@@ -46,14 +46,14 @@ public class AuthController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshRequest refreshRequest) {
-        AuthResponse authResponse = authService.refresh(refreshRequest);
+    public ResponseEntity<AuthResponse> refreshSession(@Valid @RequestBody RefreshRequest refreshRequest) {
+        AuthResponse authResponse = authService.refreshSession(refreshRequest);
         return ResponseEntity.ok(authResponse);
     }
 
     @DeleteMapping("/sessions")
-    public ResponseEntity<Void> closeAllSessions() {
-        authService.closeAllSessions();
+    public ResponseEntity<Void> logoutAllSessions() {
+        authService.logoutAllSessions();
         return ResponseEntity.noContent().build();
     }
 }

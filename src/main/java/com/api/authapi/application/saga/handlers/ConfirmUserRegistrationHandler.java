@@ -19,18 +19,15 @@ public class ConfirmUserRegistrationHandler {
 
     private final UserRegistrationStateService userRegistrationStateService;
 
-    public void handle(@Valid ConfirmUserRegistrationCommand cmd) {
+    public void confirmUserRegistration(@Valid ConfirmUserRegistrationCommand cmd) {
         UUID sagaId = cmd.sagaId();
-        log.info("[UserRegistrationSagaOrchestrator::handleConfirmUserRegistrationCommand] Confirming saga. sagaId={}", sagaId);
         try {
             UserRegistrationState state = userRegistrationStateService.getSagaState(sagaId);
             if (List.of(UserRegistrationStep.COMPENSATED, UserRegistrationStep.COMPLETED, UserRegistrationStep.FAILED)
                     .contains(state.getStep())) {
-                log.debug("[UserRegistrationSagaOrchestrator::handleConfirmUserRegistrationCommand] Saga is already completed/compensated. sagaId={}", sagaId);
                 return;
             }
             userRegistrationStateService.markCompleted(sagaId);
-            log.info("[UserRegistrationSagaOrchestrator::handleConfirmUserRegistrationCommand] Saga marked as COMPLETED. sagaId={}", sagaId);
         } catch (Exception ex) {
             log.error("[UserRegistrationSagaOrchestrator::handleConfirmUserRegistrationCommand] Failed to confirm saga. sagaId={}", sagaId, ex);
         }
