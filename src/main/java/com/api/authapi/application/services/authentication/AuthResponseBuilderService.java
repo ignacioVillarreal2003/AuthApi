@@ -6,7 +6,6 @@ import com.api.authapi.config.authentication.JwtService;
 import com.api.authapi.domain.dto.auth.AuthResponse;
 import com.api.authapi.domain.model.RefreshToken;
 import com.api.authapi.domain.model.User;
-import com.api.authapi.infrastructure.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,25 +15,22 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthResponseBuilderService {
 
-    private final UserRepository userRepository;
     private final JwtService jwtService;
     private final UserResponseMapper userResponseMapper;
     private final RefreshTokenCreationService refreshTokenCreationService;
 
-    public AuthResponse generateAuthResponse(User user) {
-        log.info("[AuthResponseBuilderService::generateAuthResponse] - Building authentication response");
+    public AuthResponse build(User user) {
+        log.info("Generating auth response for user: {}", user.getEmail());
 
-        String token = jwtService.generateToken(user);
-        RefreshToken refreshToken = refreshTokenCreationService.create(
-                jwtService.generateRefreshToken(user),
-                user);
+        String jwt = jwtService.generateToken(user);
+        String refresh = jwtService.generateRefreshToken(user);
 
-        userRepository.save(user);
+        RefreshToken refreshToken = refreshTokenCreationService.create(refresh, user);
 
-        log.debug("[AuthResponseBuilderService::generateAuthResponse] - Tokens generated and saved");
+        log.debug("Tokens generated and saved for user: {}", user.getEmail());
 
         return AuthResponse.builder()
-                .token(token)
+                .token(jwt)
                 .refreshToken(refreshToken.getToken())
                 .user(userResponseMapper.apply(user))
                 .build();

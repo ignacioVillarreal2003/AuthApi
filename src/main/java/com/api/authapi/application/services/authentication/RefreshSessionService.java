@@ -1,6 +1,6 @@
 package com.api.authapi.application.services.authentication;
 
-import com.api.authapi.application.exceptions.InvalidRefreshTokenException;
+import com.api.authapi.application.exceptions.unauthorized.InvalidRefreshTokenException;
 import com.api.authapi.application.helpers.UserHelperService;
 import com.api.authapi.application.services.refreshToken.RefreshTokenRetrievalService;
 import com.api.authapi.application.services.refreshToken.RefreshTokenRevocationService;
@@ -24,25 +24,28 @@ public class RefreshSessionService {
     private final RefreshTokenRevocationService refreshTokenRevocationService;
 
     public AuthResponse refreshSession(String token) {
-        log.info("[RefreshSessionService::refreshSession] - Attempting to refresh session");
+        log.info("Attempting to refresh session with provided token");
 
         RefreshToken refreshToken = refreshTokenRetrievalService.getByToken(token);
         User user = refreshToken.getUser();
+
+        log.debug("Refresh token belongs to user: {}", user.getEmail());
+
         userHelperService.verifyAccountStatus(user);
 
         if (refreshToken.isRevoked()) {
-            log.warn("[RefreshSessionService::refreshSession] - Refresh token already revoked");
+            log.warn("Token already revoked for user: {}", user.getEmail());
             throw new InvalidRefreshTokenException();
         }
 
         if (Instant.now().isAfter(refreshToken.getExpiresAt())) {
-            log.warn("[RefreshSessionService::refreshSession] - Refresh token has expired");
+            log.warn("Token expired for user: {}", user.getEmail());
             throw new InvalidRefreshTokenException();
         }
 
         refreshTokenRevocationService.revokeById(refreshToken.getId());
 
-        log.info("[RefreshSessionService::refreshSession] - Session refreshed successfully");
-        return authResponseBuilderService.generateAuthResponse(user);
+        log.info("Session successfully refreshed for user: {}", user.getEmail());
+        return authResponseBuilderService.build(user);
     }
 }

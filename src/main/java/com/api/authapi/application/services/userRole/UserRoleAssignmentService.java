@@ -1,6 +1,8 @@
 package com.api.authapi.application.services.userRole;
 
-import com.api.authapi.application.exceptions.RoleAlreadyAssignedException;
+import com.api.authapi.application.exceptions.badRequest.InvalidRoleException;
+import com.api.authapi.application.exceptions.badRequest.InvalidUserException;
+import com.api.authapi.application.exceptions.conflict.RoleAlreadyAssignedException;
 import com.api.authapi.application.services.role.RoleRetrievalService;
 import com.api.authapi.domain.model.Role;
 import com.api.authapi.domain.model.User;
@@ -19,12 +21,23 @@ public class UserRoleAssignmentService {
     private final RoleRetrievalService roleRetrievalService;
 
     public void assignRoleToUser(User user, String roleName) {
-        log.debug("[UserRoleAssignmentService::assignRoleToUser] - Assigning role '{}' to user ID {}", roleName, user.getId());
+        log.debug("Attempting to assign role '{}' to user {}", roleName, user != null ? user.getEmail() : null);
+
+        if (user == null) {
+            log.error("User is null during role assignment");
+            throw new InvalidUserException();
+        }
+
+        if (roleName == null || roleName.isBlank()) {
+            log.error("Invalid role name '{}' for user {}", roleName, user.getEmail());
+            throw new InvalidRoleException();
+        }
 
         Role role = roleRetrievalService.getByName(roleName);
+        log.debug("Retrieved role '{}' for assignment to user {}", role.getName(), user.getEmail());
 
         if (userRoleRepository.existsByUserAndRole(user, role)) {
-            log.warn("[UserRoleAssignmentService::assignRoleToUser] - User ID {} already has role '{}'", user.getId(), roleName);
+            log.warn("Role '{}' already assigned to user {}", roleName, user.getEmail());
             throw new RoleAlreadyAssignedException();
         }
 
@@ -36,6 +49,6 @@ public class UserRoleAssignmentService {
         user.getUserRoles().add(userRole);
         userRoleRepository.save(userRole);
 
-        log.info("[UserRoleAssignmentService::assignRoleToUser] - Role '{}' assigned to user ID {}", roleName, user.getId());
+        log.info("Role '{}' successfully assigned to user {}", roleName, user.getEmail());
     }
 }

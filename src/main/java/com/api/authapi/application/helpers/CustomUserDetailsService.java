@@ -1,6 +1,6 @@
 package com.api.authapi.application.helpers;
 
-import com.api.authapi.application.exceptions.UserNotFoundException;
+import com.api.authapi.application.exceptions.notFound.UserNotFoundException;
 import com.api.authapi.infrastructure.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

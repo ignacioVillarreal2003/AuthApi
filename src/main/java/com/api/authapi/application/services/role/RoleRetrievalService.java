@@ -1,6 +1,6 @@
 package com.api.authapi.application.services.role;
 
-import com.api.authapi.application.exceptions.RoleNotFoundException;
+import com.api.authapi.application.exceptions.notFound.RoleNotFoundException;
 import com.api.authapi.domain.model.Role;
 import com.api.authapi.infrastructure.persistence.repositories.RoleRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,11 +15,11 @@ public class RoleRetrievalService {
     private final RoleRepository roleRepository;
 
     public Role getByName(String name) {
-        log.debug("[RoleRetrievalService::findByName] - Retrieving role '{}'", name);
+        log.debug("Retrieving role '{}'", name);
 
         return roleRepository.findByName(name)
                 .orElseThrow(() -> {
-                    log.warn("[RoleRetrievalService::findByName] - Role '{}' not found", name);
+                    log.warn("Role '{}' not found", name);
                     return new RoleNotFoundException();
                 });
     }

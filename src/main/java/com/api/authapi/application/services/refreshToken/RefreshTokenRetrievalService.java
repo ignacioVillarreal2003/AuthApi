@@ -1,6 +1,6 @@
 package com.api.authapi.application.services.refreshToken;
 
-import com.api.authapi.application.exceptions.RefreshTokenNotFoundException;
+import com.api.authapi.application.exceptions.notFound.RefreshTokenNotFoundException;
 import com.api.authapi.domain.model.RefreshToken;
 import com.api.authapi.infrastructure.persistence.repositories.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,11 +15,11 @@ public class RefreshTokenRetrievalService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     public RefreshToken getByToken(String token) {
-        log.debug("[RefreshTokenRetrievalService::getByToken] - Looking up refresh token");
+        log.debug("Looking up refresh token '{}'", token);
 
         return refreshTokenRepository.findByToken(token)
                 .orElseThrow(() -> {
-                    log.warn("[RefreshTokenRetrievalService::getByToken] - Token not found");
+                    log.warn("Refresh token '{}' not found", token);
                     return new RefreshTokenNotFoundException();
                 });
     }

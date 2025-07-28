@@ -17,8 +17,8 @@ public class MailService {
     private final JavaMailSender mailSender;
     private final AppProperties appProperties;
 
-    public void sendActivation(String to, UUID token, UUID sagaId) {
-        String link = appProperties.getBaseUrl() + "/auth/activation/" + token + "/" + sagaId;
+    public void sendAccountActivation(String to, UUID token, UUID sagaId) {
+        String link = appProperties.getBaseUrl() + "/account/verify/" + token + "/" + sagaId;
 
         String subject = "Activa tu cuenta";
         String content = """
@@ -40,8 +40,8 @@ public class MailService {
         }
     }
 
-    public void sendReactivation(String to, UUID token) {
-        String link = appProperties.getBaseUrl() + "/me/enable/" + token;
+    public void sendAccountReactivation(String to, UUID token) {
+        String link = appProperties.getBaseUrl() + "/user/account/reactivate" + token;
 
         String subject = "Reactivá tu cuenta";
         String content = """

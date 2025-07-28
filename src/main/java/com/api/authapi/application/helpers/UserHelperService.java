@@ -1,6 +1,6 @@
 package com.api.authapi.application.helpers;
 
-import com.api.authapi.application.exceptions.*;
+import com.api.authapi.application.exceptions.unauthorized.*;
 import com.api.authapi.config.authentication.AuthenticationUserProvider;
 import com.api.authapi.domain.model.User;
 import lombok.RequiredArgsConstructor;

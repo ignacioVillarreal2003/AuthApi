@@ -3,7 +3,7 @@ package com.api.authapi.application.saga.handlers;
 import com.api.authapi.application.saga.helpers.SagaErrorMapper;
 import com.api.authapi.application.saga.services.UserRegistrationStateService;
 import com.api.authapi.application.services.authentication.RegisterService;
-import com.api.authapi.domain.saga.RegisterResult;
+import com.api.authapi.domain.dto.auth.RegisterResponse;
 import com.api.authapi.domain.saga.command.InitiateUserRegistrationCommand;
 import com.api.authapi.domain.saga.reply.AwaitingVerificationUserRegistrationReply;
 import com.api.authapi.domain.saga.reply.FailureUserRegistrationReply;
@@ -35,7 +35,7 @@ public class InitiateUserRegistrationHandler {
             if (state.getStep() != UserRegistrationStep.STARTED) {
                 return;
             }
-            RegisterResult response = registerService.register(sagaId,
+            RegisterResponse response = registerService.register(sagaId,
                     cmd.email(),
                     cmd.password(),
                     cmd.roles());

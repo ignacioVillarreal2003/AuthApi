@@ -16,17 +16,12 @@ import java.util.UUID;
 public class UserRegistrationOrchestrator {
 
     private final InitiateUserRegistrationHandler initiateUserRegistrationHandler;
-    private final ActivateUserRegistrationHandler activateUserRegistrationHandler;
     private final RollbackUserRegistrationHandler rollbackUserRegistrationHandler;
     private final RecoverUserRegistrationHandler recoverUserRegistrationHandler;
     private final ConfirmUserRegistrationHandler confirmUserRegistrationHandler;
 
     public void handleInitiateUserRegistrationCommand(InitiateUserRegistrationCommand cmd) {
         initiateUserRegistrationHandler.handle(cmd);
-    }
-
-    public void handleActiveAccount(UUID sagaId) {
-        activateUserRegistrationHandler.activateUserRegistration(sagaId);
     }
 
     public void handleRollbackUserRegistrationCommand(RollbackUserRegistrationCommand cmd) {

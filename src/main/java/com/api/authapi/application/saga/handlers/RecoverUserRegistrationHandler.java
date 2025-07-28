@@ -2,7 +2,7 @@ package com.api.authapi.application.saga.handlers;
 
 import com.api.authapi.application.saga.services.UserRegistrationStateService;
 import com.api.authapi.application.services.user.UserDeletionService;
-import com.api.authapi.application.services.userRole.UserRoleDeallocationService;
+import com.api.authapi.application.services.userRole.UserRoleRevocationService;
 import com.api.authapi.domain.saga.state.UserRegistrationState;
 import com.api.authapi.domain.saga.step.UserRegistrationStep;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class RecoverUserRegistrationHandler {
 
     private final UserRegistrationStateService userRegistrationStateService;
     private final UserDeletionService userDeletionService;
-    private final UserRoleDeallocationService userRoleDeallocationService;
+    private final UserRoleRevocationService userRoleDeallocationService;
 
     public void recoverUserRegistration(UUID sagaId) {
         try {
@@ -31,7 +31,7 @@ public class RecoverUserRegistrationHandler {
                 }
                 else {
                     state.getRoles().forEach(role -> {
-                        userRoleDeallocationService.deallocateRoleToUser(state.getUserId(), role);
+                        userRoleDeallocationService.removeRoleFromUser(state.getUserId(), role);
                     });
                 }
                 userRegistrationStateService.markCompensated(sagaId);

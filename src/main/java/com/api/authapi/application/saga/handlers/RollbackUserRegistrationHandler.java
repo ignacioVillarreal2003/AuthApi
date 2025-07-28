@@ -2,7 +2,7 @@ package com.api.authapi.application.saga.handlers;
 
 import com.api.authapi.application.saga.services.UserRegistrationStateService;
 import com.api.authapi.application.services.user.UserDeletionService;
-import com.api.authapi.application.services.userRole.UserRoleDeallocationService;
+import com.api.authapi.application.services.userRole.UserRoleRevocationService;
 import com.api.authapi.domain.saga.command.RollbackUserRegistrationCommand;
 import com.api.authapi.domain.saga.state.UserRegistrationState;
 import com.api.authapi.domain.saga.step.UserRegistrationStep;
@@ -22,7 +22,7 @@ public class RollbackUserRegistrationHandler {
 
     private final UserRegistrationStateService userRegistrationStateService;
     private final UserDeletionService userDeletionService;
-    private final UserRoleDeallocationService userRoleDeallocationService;
+    private final UserRoleRevocationService userRoleDeallocationService;
 
     @Transactional
     public void rollbackUserRegistration(@Valid RollbackUserRegistrationCommand cmd) {

@@ -17,14 +17,14 @@ public class AccountDeactivationService {
 
     public void deactivateAccount() {
         User user = userHelperService.getCurrentUser();
-        userHelperService.verifyAccountStatus(user);
+        log.debug("Attempting to deactivate account for user {}", user.getEmail());
 
         if (user.isEnabled()) {
             user.setEnabled(false);
             userRepository.save(user);
-            log.info("[AccountDeactivationService::deactivateAccount] - Account deactivated");
+            log.info("Account deactivated for user {}", user.getEmail());
         } else {
-            log.info("[AccountDeactivationService::deactivateAccount] - Account already deactivated");
+            log.info("Account already deactivated for user {}", user.getEmail());
         }
     }
 }

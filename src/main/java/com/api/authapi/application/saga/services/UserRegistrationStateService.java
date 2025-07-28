@@ -1,6 +1,6 @@
 package com.api.authapi.application.saga.services;
 
-import com.api.authapi.application.exceptions.SagaNotFoundException;
+import com.api.authapi.application.exceptions.notFound.SagaNotFoundException;
 import com.api.authapi.domain.saga.state.UserRegistrationState;
 import com.api.authapi.domain.saga.step.UserRegistrationStep;
 import com.api.authapi.infrastructure.persistence.repositories.UserRegistrationStateRepository;

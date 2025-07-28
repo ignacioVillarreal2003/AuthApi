@@ -1,9 +1,7 @@
 package com.api.authapi.application.services.authentication;
 
-import com.api.authapi.domain.dto.auth.AuthResponse;
-import com.api.authapi.domain.dto.auth.LoginRequest;
-import com.api.authapi.domain.dto.auth.LogoutRequest;
-import com.api.authapi.domain.dto.auth.RefreshRequest;
+import com.api.authapi.config.annotations.RequireActiveAccount;
+import com.api.authapi.domain.dto.auth.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,16 +20,18 @@ public class AuthenticationService {
                 request.password());
     }
 
+    @RequireActiveAccount
     @Transactional
     public void logout(LogoutRequest request) {
         logoutService.logout(request.refreshToken());
     }
 
     @Transactional
-    public AuthResponse refreshSession(RefreshRequest request) {
+    public AuthResponse refreshSession(RefreshSessionRequest request) {
         return refreshSessionService.refreshSession(request.refreshToken());
     }
 
+    @RequireActiveAccount
     @Transactional
     public void logoutAllSessions() {
         logoutService.logoutAllSessions();

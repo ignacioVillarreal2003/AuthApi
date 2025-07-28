@@ -19,7 +19,7 @@ public class RefreshTokenCreationService {
     private final JwtProperties jwtProperties;
 
     public RefreshToken create(String token, User user) {
-        log.debug("[RefreshTokenCreationService::create] - Creating refresh token");
+        log.debug("Creating refresh token for user {}", user.getEmail());
 
         RefreshToken refreshToken = refreshTokenRepository.save(
                 RefreshToken.builder()
@@ -31,7 +31,7 @@ public class RefreshTokenCreationService {
                         .user(user)
                         .build());
 
-        log.info("[RefreshTokenCreationService::create] - Refresh token created");
+        log.info("Refresh token created for user {} with expiration at {}", user.getEmail(), refreshToken.getExpiresAt());
 
         return refreshToken;
     }

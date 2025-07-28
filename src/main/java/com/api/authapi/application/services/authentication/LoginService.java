@@ -1,6 +1,8 @@
 package com.api.authapi.application.services.authentication;
 
-import com.api.authapi.application.exceptions.*;
+import com.api.authapi.application.exceptions.notFound.UserNotFoundException;
+import com.api.authapi.application.exceptions.unauthorized.*;
+import com.api.authapi.application.helpers.UserHelperService;
 import com.api.authapi.domain.dto.auth.AuthResponse;
 import com.api.authapi.domain.model.User;
 import com.api.authapi.infrastructure.persistence.repositories.UserRepository;
@@ -18,22 +20,25 @@ import java.time.Instant;
 @RequiredArgsConstructor
 public class LoginService {
 
+    private final UserHelperService userHelperService;
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final AuthResponseBuilderService authResponseBuilderService;
+
     private static final int MAX_FAILED_ATTEMPTS = 5;
     private static final int LOCKOUT_DURATION_MINUTES = 15;
 
     public AuthResponse login(String email, String password) {
-        log.info("[LoginService::login] - Attempting authentication");
+        log.info("Authentication attempt for user: {}", email);
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
-                    log.warn("[LoginService::login] - User not found");
+                    log.warn("Login failed - User with email '{}' not found", email);
                     return new UserNotFoundException();
                 });
 
-        verifyNotTemporarilyLocked(user);
+        checkTemporaryLockout(user);
+        userHelperService.verifyAccountStatus(user);
 
         try {
             authenticationManager.authenticate(
@@ -41,40 +46,40 @@ public class LoginService {
             );
 
             resetLoginAttempts(user);
+            log.info("Authentication successful for user: {}", email);
 
-            log.info("[LoginService::login] - Authentication successful");
-            return authResponseBuilderService.generateAuthResponse(user);
+            return authResponseBuilderService.build(user);
         }
         catch (BadCredentialsException ex) {
-            log.warn("[LoginService::login] - Invalid credentials");
+            log.warn("Invalid credentials for user: {}", email);
             registerFailedLoginAttempt(user);
             throw new InvalidCredentialsException();
         }
         catch (DisabledException ex) {
-            log.warn("[LoginService::login] - Account disabled");
+            log.warn("Account disabled for user: {}", email);
             throw new AccountDisabledException();
         }
         catch (LockedException ex) {
-            log.warn("[LoginService::login] - Account locked");
+            log.warn("Account locked for user: {}", email);
             throw new AccountLockedException();
         }
         catch (AccountExpiredException ex) {
-            log.warn("[LoginService::login] - Account expired");
+            log.warn("Account expired for user: {}", email);
             throw new AccountExpiredCustomException();
         }
         catch (CredentialsExpiredException ex) {
-            log.warn("[LoginService::login] - Credentials expired");
+            log.warn("Credentials expired for user: {}", email);
             throw new AccountCredentialsExpiredException();
         }
         catch (AuthenticationException ex) {
-            log.error("[LoginService::login] - General authentication failure");
+            log.error("Unexpected authentication error for user: {}", email, ex);
             throw new AuthenticationServiceException("Error during authentication");
         }
     }
 
-    private void verifyNotTemporarilyLocked(User user) {
+    private void checkTemporaryLockout(User user) {
         if (user.getLockoutUntil() != null && Instant.now().isBefore(user.getLockoutUntil())) {
-            log.warn("[LoginService::verifyNotTemporarilyLocked] - User temporarily locked");
+            log.warn("User '{}' is temporarily locked until {}", user.getEmail(), user.getLockoutUntil());
             throw new AccountLockedException();
         }
     }
@@ -86,10 +91,10 @@ public class LoginService {
         if (attempts >= MAX_FAILED_ATTEMPTS) {
             user.setLockoutUntil(Instant.now().plus(Duration.ofMinutes(LOCKOUT_DURATION_MINUTES)));
             user.setFailedLoginAttempts(0);
-            log.warn("[LoginService::registerFailedLoginAttempt] - Max attempts exceeded, user locked");
+            log.warn("User '{}' exceeded max login attempts. Temporarily locked for {} minutes", user.getEmail(), LOCKOUT_DURATION_MINUTES);
         }
         else {
-            log.info("[LoginService::registerFailedLoginAttempt] - Failed attempt registered");
+            log.info("Failed login attempt {} for user '{}'", attempts, user.getEmail());
         }
 
         userRepository.save(user);
@@ -100,7 +105,7 @@ public class LoginService {
             user.setFailedLoginAttempts(0);
             user.setLockoutUntil(null);
             userRepository.save(user);
-            log.info("[AuthenticationService::resetLoginAttempts] - Reset failed attempts and lockout");
+            log.info("Reset failed login attempts and lockout for user '{}'", user.getEmail());
         }
     }
 }

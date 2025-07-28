@@ -19,25 +19,21 @@ public class LogoutService {
     private final RefreshTokenRevocationService refreshTokenRevocationService;
 
     public void logout(String token) {
-        log.info("[LogoutService::logout] - Starting logout process");
-
-        User user = userHelperService.getCurrentUser();
-        userHelperService.verifyAccountStatus(user);
+        log.info("Logout attempt with provided refresh token");
 
         RefreshToken refreshToken = refreshTokenRetrievalService.getByToken(token);
         refreshTokenRevocationService.revokeById(refreshToken.getId());
 
-        log.info("[LogoutService::logout] - Session successfully revoked");
+        log.info("Session revoked for user: {}", refreshToken.getUser().getEmail());
     }
 
     public void logoutAllSessions() {
-        log.info("[LogoutAllSessionsService::logoutAllSessions] - Initiating logout from all sessions");
+        log.info("Revoking all sessions");
 
         User user = userHelperService.getCurrentUser();
-        userHelperService.verifyAccountStatus(user);
 
         refreshTokenRevocationService.revokeAllByUserId(user.getId());
 
-        log.info("[LogoutAllSessionsService::logoutAllSessions] - All user sessions successfully revoked");
+        log.info("All sessions successfully revoked for user: {}", user.getEmail());
     }
 }

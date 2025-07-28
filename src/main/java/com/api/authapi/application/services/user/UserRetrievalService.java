@@ -1,6 +1,6 @@
 package com.api.authapi.application.services.user;
 
-import com.api.authapi.application.exceptions.UserNotFoundException;
+import com.api.authapi.application.exceptions.notFound.UserNotFoundException;
 import com.api.authapi.domain.model.User;
 import com.api.authapi.infrastructure.persistence.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +15,10 @@ public class UserRetrievalService {
     private final UserRepository userRepository;
 
     public User getById(Long id) {
-        log.debug("[UserRetrievalService::getById] - Retrieving user");
+        log.debug("Retrieving user with ID {}", id);
         return userRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.warn("[UserRetrievalService::getById] - User not found");
+                    log.warn("User with ID {} not found", id);
                     return new UserNotFoundException();
                 });
     }

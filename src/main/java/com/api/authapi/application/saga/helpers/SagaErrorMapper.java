@@ -1,7 +1,7 @@
 package com.api.authapi.application.saga.helpers;
 
-import com.api.authapi.application.exceptions.InvalidCredentialsException;
-import com.api.authapi.application.exceptions.SagaNotFoundException;
+import com.api.authapi.application.exceptions.unauthorized.InvalidCredentialsException;
+import com.api.authapi.application.exceptions.notFound.SagaNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException;
 import org.springframework.web.server.ResponseStatusException;

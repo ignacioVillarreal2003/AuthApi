@@ -1,0 +1,11 @@
+package com.api.authapi.domain.dto.auth;
+
+import lombok.Builder;
+import lombok.Data;
+
+@Builder
+@Data
+public class RegisterResponse {
+    private AuthResponse authResponse;
+    private boolean isNew;
+}

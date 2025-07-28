@@ -1,12 +1,14 @@
 package com.api.authapi.application.services.user;
 
-import com.api.authapi.domain.dto.user.ReactivationRequest;
+import com.api.authapi.config.annotations.RequireActiveAccount;
+import com.api.authapi.domain.dto.user.VerifyAccountRequest;
+import com.api.authapi.domain.dto.user.ReactiveAccountRequest;
+import com.api.authapi.domain.dto.user.RequestAccountReactivationRequest;
 import com.api.authapi.domain.dto.user.ChangePasswordRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -14,25 +16,35 @@ public class UserService {
 
     private final AccountDeactivationService accountDeactivationService;
     private final AccountActivationService accountActivationService;
-    private final UserUpdateService userUpdateService;
+    private final UserCredentialService userCredentialService;
 
+    @RequireActiveAccount
     @Transactional
     public void deactivateAccount() {
         accountDeactivationService.deactivateAccount();
     }
 
     @Transactional
-    public void activateAccount(UUID token) {
-        accountActivationService.activateAccount(token);
+    public void reactivateAccount(ReactiveAccountRequest request) {
+        accountActivationService.reactivateAccountByToken(request.activationToken());
     }
 
     @Transactional
-    public void requestAccountReactivation(ReactivationRequest request) {
+    public void verifyAccount(@Valid VerifyAccountRequest request) {
+        accountActivationService.verifyAccountByToken(request.activationToken(),
+                request.sagaId());
+    }
+
+    @Transactional
+    public void requestAccountReactivation(RequestAccountReactivationRequest request) {
         accountActivationService.requestAccountReactivation(request.email());
     }
 
+    @RequireActiveAccount
     @Transactional
     public void changePassword(ChangePasswordRequest request) {
-        userUpdateService.changePassword(request.lastPassword(), request.newPassword());
+        userCredentialService.updatePassword(request.lastPassword(), request.newPassword());
     }
+
+
 }

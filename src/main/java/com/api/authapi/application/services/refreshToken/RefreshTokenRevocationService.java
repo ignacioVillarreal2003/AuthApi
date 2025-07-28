@@ -1,6 +1,6 @@
 package com.api.authapi.application.services.refreshToken;
 
-import com.api.authapi.application.exceptions.RefreshTokenNotFoundException;
+import com.api.authapi.application.exceptions.notFound.RefreshTokenNotFoundException;
 import com.api.authapi.domain.model.RefreshToken;
 import com.api.authapi.infrastructure.persistence.repositories.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,44 +14,45 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RefreshTokenRevocationService {
 
-    private final RefreshTokenRepository repository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     public void revokeById(Long id) {
-        log.debug("[RefreshTokenRevocationService::revokeById] - Revoking token by ID {}", id);
+        log.debug("Revoking refresh token with ID {}", id);
 
-        RefreshToken token = repository.findById(id)
+        RefreshToken token = refreshTokenRepository.findById(id)
                 .orElseThrow(() -> {
-                    log.warn("[RefreshTokenRevocationService::revokeById] - Token not found");
+                    log.warn("Refresh token with ID {} not found", id);
                     return new RefreshTokenNotFoundException();
                 });
 
         if (!token.isRevoked()) {
             token.setRevoked(true);
-            repository.save(token);
-            log.info("[RefreshTokenRevocationService::revokeById] - Token revoked");
-        } else {
-            log.info("[RefreshTokenRevocationService::revokeById] - Token already revoked");
+            refreshTokenRepository.save(token);
+            log.info("Refresh token with ID {} successfully revoked", id);
+        }
+        else {
+            log.info("Refresh token with ID {} was already revoked", id);
         }
     }
 
     public void revokeAllByUserId(Long userId) {
-        log.debug("[RefreshTokenRevocationService::revokeAllByUserId] - Revoking all tokens for user ID {}", userId);
+        log.debug("Revoking all refresh tokens for user ID {}", userId);
 
-        List<RefreshToken> tokens = repository.findAllByUser_Id(userId);
-        boolean anyRevoked = false;
+        List<RefreshToken> tokens = refreshTokenRepository.findAllByUser_Id(userId);
+        List<RefreshToken> activeTokens = tokens.stream()
+                .filter(t -> !t.isRevoked())
+                .toList();
 
-        for (RefreshToken token : tokens) {
-            if (!token.isRevoked()) {
-                token.setRevoked(true);
-                anyRevoked = true;
-            }
+        for (RefreshToken token : activeTokens) {
+            token.setRevoked(true);
         }
 
-        if (anyRevoked) {
-            repository.saveAll(tokens);
-            log.info("[RefreshTokenRevocationService::revokeAllByUserId] - Revoked {} tokens", tokens.size());
-        } else {
-            log.info("[RefreshTokenRevocationService::revokeAllByUserId] - No tokens to revoke");
+        if (!activeTokens.isEmpty()) {
+            refreshTokenRepository.saveAll(activeTokens);
+            log.info("Revoked {} refresh tokens for user ID {}", activeTokens.size(), userId);
+        }
+        else {
+            log.info("No active refresh tokens to revoke for user ID {}", userId);
         }
     }
 }
