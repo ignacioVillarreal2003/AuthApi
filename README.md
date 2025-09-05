@@ -2,4 +2,4 @@
 
 - DLQ para las colas
 - Outbox Pattern
-- 
+- sacar flyway

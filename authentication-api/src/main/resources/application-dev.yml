@@ -1,30 +1,24 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/main_db
-    username: ignacio
-    password: 12345678
+    url: jdbc:postgresql://localhost:5432/authentication_db
+    username: root_user
+    password: root_password
   jpa:
     hibernate:
       ddl-auto: create-drop
     show-sql: true
     properties:
       hibernate:
-        default_schema: auth_schema
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
   rabbitmq:
     host: localhost
     port: 5672
-    username: ignacio
-    password: 12345678
+    username: root_user
+    password: root_password
     template:
       mandatory: true
-
-  flyway:
-    enabled: true
-    schemas: auth_schema
-    locations: classpath:db/migration
 
   cache:
     type: redis
