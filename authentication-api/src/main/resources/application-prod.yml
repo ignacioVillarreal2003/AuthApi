@@ -9,7 +9,6 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        default_schema: auth_schema
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
@@ -20,11 +19,6 @@ spring:
     password: ${RABBITMQ_PASSWORD}
     template:
       mandatory: true
-
-  flyway:
-    enabled: true
-    schemas: auth_schema
-    locations: classpath:db/migration
 
   cache:
     type: redis

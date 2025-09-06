@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://postgres:5432/authentication_db
+    url: jdbc:postgresql://postgresql:5432/authentication_db
     username: root_user
     password: root_password
   jpa:
